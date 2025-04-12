@@ -40,8 +40,7 @@ export interface FormValues {
 }
 
 // Helper function to ensure values are numbers
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function ensureNumber(value: any, defaultValue: number = 0): number {
+function ensureNumber(value: unknown, defaultValue: number = 0): number {
   if (value === undefined || value === null) return defaultValue;
 
   // If it's already a number, return it
