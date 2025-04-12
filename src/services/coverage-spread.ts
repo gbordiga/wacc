@@ -115,5 +115,4 @@ export function getCompanyTypes(): CompanyType[] {
   return Object.keys(COVERAGE_SPREAD_TABLE) as CompanyType[];
 }
 
-// Esempio:
-const result = getCoverageSpread("largeNonFinancial", 2.6);
+// Esempio
