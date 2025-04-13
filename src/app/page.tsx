@@ -14,7 +14,7 @@ export default function CalculatorPage() {
           WACC Calculator
         </h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          Calculate the Weighted Average Cost of Capital based (WACC)
+          Calculate the Weighted Average Cost of Capital (WACC)
         </p>
       </div>
       <Calculator />

@@ -117,7 +117,7 @@ export default function WACCResults({ result }: WACCResultsProps) {
               Cost of Debt (k<sub>d</sub>)
             </CardTitle>
             <CardDescription className="text-center">
-              After-tax cost of debt
+              Expected return by lenders, net of tax
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -347,79 +347,6 @@ export default function WACCResults({ result }: WACCResultsProps) {
                   {safeToFixed(safeCostOfDebt * (1 - safeInputs.taxRate / 100))}
                   %
                 </p>
-              </div>
-            </div>
-
-            {/* Input Parameters */}
-            <div className="space-y-2">
-              <h3 className="font-medium">Input Parameters</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h4 className="font-medium text-sm">Capital Structure</h4>
-                  <ul className="mt-1 space-y-1 text-sm">
-                    <li>
-                      Equity Ratio:{" "}
-                      {formatPercentage(safeInputs.equityRatio, 2)}
-                    </li>
-                    <li>
-                      Debt Ratio: {formatPercentage(safeInputs.debtRatio, 2)}
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-medium text-sm">Tax & Debt</h4>
-                  <ul className="mt-1 space-y-1 text-sm">
-                    <li>
-                      Tax Rate: {formatPercentage(safeInputs.taxRate / 100, 2)}
-                    </li>
-                    <li>
-                      Cost of Debt:{" "}
-                      {formatPercentage(safeInputs.costOfDebt / 100, 2)}
-                    </li>
-                    <li>
-                      After-Tax Cost of Debt:{" "}
-                      {formatPercentage(
-                        (safeInputs.costOfDebt *
-                          (1 - safeInputs.taxRate / 100)) /
-                          100,
-                        2
-                      )}
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-medium text-sm">Market Risks</h4>
-                  <ul className="mt-1 space-y-1 text-sm">
-                    <li>
-                      Risk-Free Rate:{" "}
-                      {formatPercentage(safeInputs.riskFreeRate / 100, 2)}
-                    </li>
-                    <li>
-                      Market Risk Premium:{" "}
-                      {formatPercentage(safeInputs.marketRiskPremium / 100, 2)}
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-medium text-sm">Company & Country</h4>
-                  <ul className="mt-1 space-y-1 text-sm">
-                    <li>Beta (β): {safeToFixed(safeInputs.beta)}</li>
-                    <li>
-                      Country Risk Premium:{" "}
-                      {formatPercentage(safeInputs.countryRiskPremium / 100, 2)}
-                    </li>
-                    <li>
-                      Size Premium:{" "}
-                      {formatPercentage(safeInputs.sizePremium / 100, 2)}
-                    </li>
-                    <li>
-                      Additional Risk:{" "}
-                      {formatPercentage(safeInputs.additionalRisk / 100, 2)}
-                    </li>
-                    <li>Country: {safeInputs.country}</li>
-                    <li>Sector: {safeInputs.sector}</li>
-                  </ul>
-                </div>
               </div>
             </div>
           </div>
