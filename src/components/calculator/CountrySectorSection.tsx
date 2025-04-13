@@ -32,7 +32,11 @@ export function CountrySectorSection({
   onSectorChange,
 }: CountrySectorSectionProps) {
   const [taxCountries, setTaxCountries] = useState<string[]>([]);
+  const [isManualTaxRate, setIsManualTaxRate] = useState(false);
   const currentCountry = form.watch("country");
+
+  // Watch for changes to taxRate to detect manual edits
+  const taxRate = form.watch("taxRate");
 
   // Initialize tax countries
   useEffect(() => {
@@ -43,10 +47,29 @@ export function CountrySectorSection({
   const handleTaxCountryChange = useCallback(
     (country: string) => {
       const taxRate = getTaxRate(country);
-      if (country && taxRate !== undefined) {
+      if (country && taxRate !== undefined && !isManualTaxRate) {
+        // Only update tax rate if it hasn't been manually changed
         // Convert from decimal to percentage format (e.g., 0.25 to 25)
         form.setValue("taxRate", taxRate * 100);
         form.setValue("taxCountry", country);
+      } else if (country) {
+        // Always update the tax country even if we don't change the tax rate
+        form.setValue("taxCountry", country);
+      }
+    },
+    [form, isManualTaxRate]
+  );
+
+  // Reset manual flag when tax country is explicitly selected
+  const handleTaxSelectorChange = useCallback(
+    (taxRate: number, newCountry?: string) => {
+      // Update both the tax country and tax rate
+      if (newCountry) {
+        form.setValue("taxCountry", newCountry);
+        // When user explicitly selects a tax country in the tax selector,
+        // we should update the tax rate and reset the manual flag
+        form.setValue("taxRate", taxRate * 100); // Convert decimal to percentage
+        setIsManualTaxRate(false);
       }
     },
     [form]
@@ -81,6 +104,23 @@ export function CountrySectorSection({
       handleTaxCountryChange(closestMatch);
     }
   }, [currentCountry, taxCountries, form, handleTaxCountryChange]);
+
+  // Detect manual changes to tax rate
+  useEffect(() => {
+    const taxCountry = form.getValues("taxCountry");
+    if (!taxCountry) return;
+
+    const taxRateFromCountry = getTaxRate(taxCountry);
+    if (taxRateFromCountry === undefined) return;
+
+    const expectedTaxRate = taxRateFromCountry * 100;
+
+    // If tax rate doesn't match what would be set by the country,
+    // assume it was manually changed
+    if (Math.abs(taxRate - expectedTaxRate) > 0.01) {
+      setIsManualTaxRate(true);
+    }
+  }, [taxRate, form]);
 
   return (
     <div className="space-y-6">
@@ -130,13 +170,7 @@ export function CountrySectorSection({
               <FormLabel>Tax Country</FormLabel>
               <TaxSelector
                 country={field.value || ""}
-                onChange={(taxRate, newCountry) => {
-                  // Update both the tax country and tax rate
-                  if (newCountry) {
-                    form.setValue("taxCountry", newCountry);
-                  }
-                  form.setValue("taxRate", taxRate * 100); // Convert decimal to percentage
-                }}
+                onChange={handleTaxSelectorChange}
               />
               <FormDescription>
                 Determines the marginal tax rate for cost of debt calculation
