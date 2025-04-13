@@ -15,13 +15,6 @@ A modern web application for calculating the Weighted Average Cost of Capital (W
 - **Country & Sector Specific**: Tailored calculations based on geographic regions and industry sectors
 - **Visualized Results**: Clear breakdown of all components and calculations
 
-## Data sources
-
-- **Risk-Free Rate and Market Risk Premium**: Fernandez, [Survey: Market Risk Premium and Risk-Free Rate](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4754347)
-- **Beta by Industry**: Damodaran, [Betas by Sector (US)](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/Betas.html)
-- **Corporate Marginal Tax Rates**: Damodaran, [Corporate Marginal Tax Rates - By country](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/countrytaxrates.html)
-- **Size Risk Premium**: Duff & Phelps (2023), Cost of Capital Navigator
-
 ## Technology Stack
 
 - Next.js with App Router
@@ -51,12 +44,12 @@ Visit `http://localhost:3000` to use the calculator.
 5. Review and adjust suggested parameters if needed
 6. Calculate WACC and analyze the detailed breakdown
 
-## Data Sources
+## Data sources
 
-- Risk-free rates and market risk premiums: Fernandez 2024
-- Industry betas and sector data: Damodaran January 2025
-- Marginal tax rates: Global tax database
-- Size premiums: Duff & Phelps research
+- **Risk-Free Rate and Market Risk Premium**: Fernandez, [Survey: Market Risk Premium and Risk-Free Rate](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4754347)
+- **Beta by Industry**: Damodaran, [Betas by Sector (US)](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/Betas.html)
+- **Corporate Marginal Tax Rates**: Damodaran, [Corporate Marginal Tax Rates - By country](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/countrytaxrates.html)
+- **Size Risk Premium**: Duff & Phelps
 
 ## License
 
