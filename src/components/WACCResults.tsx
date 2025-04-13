@@ -287,7 +287,9 @@ export default function WACCResults({ result }: WACCResultsProps) {
 
             {/* Cost of Debt Breakdown */}
             <div className="space-y-4">
-              <h3 className="font-medium">Cost of Debt Breakdown</h3>
+              <h3 className="font-medium">
+                Cost of Debt (k<sub>d</sub>) Breakdown
+              </h3>
 
               {/* Cost of Debt Visualization */}
               <div className="w-full bg-muted h-6 rounded-full overflow-hidden flex mb-2">
