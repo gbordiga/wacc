@@ -4,7 +4,7 @@ A modern web application for calculating the Weighted Average Cost of Capital (W
 
 ## Features
 
-- **Industry Data Integration**: Uses Damodaran and Fernandez data for accurate financial calculations
+- **Industry Data Integration**: Uses Damodaran, Fernandez and Duff and Phelps data for accurate financial calculations
 - **Comprehensive Parameters**: Includes all critical WACC components:
   - Cost of Equity (CAPM model with size premium)
   - Cost of Debt (based on risk-free rate and spreads)
@@ -14,6 +14,13 @@ A modern web application for calculating the Weighted Average Cost of Capital (W
 - **Debt Rating**: Estimates debt spreads from Interest Coverage Ratio (ICR)
 - **Country & Sector Specific**: Tailored calculations based on geographic regions and industry sectors
 - **Visualized Results**: Clear breakdown of all components and calculations
+
+## Data sources
+
+- **Risk-Free Rate and Market Risk Premium**: Fernandez, [Survey: Market Risk Premium and Risk-Free Rate](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4754347)
+- **Beta by Industry**: Damodaran, [Betas by Sector (US)](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/Betas.html)
+- **Corporate Marginal Tax Rates**: Damodaran, [Corporate Marginal Tax Rates - By country](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/countrytaxrates.html)
+- **Size Risk Premium**: Duff & Phelps (2023), Cost of Capital Navigator
 
 ## Technology Stack
 

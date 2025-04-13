@@ -1,3 +1,5 @@
+// https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/countrytaxrates.html
+
 export const MARGINAL_TAX_BY_COUNTRY = {
   Afghanistan: 0.2,
   "Aland Islands": 0.2,

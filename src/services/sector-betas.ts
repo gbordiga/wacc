@@ -1,3 +1,5 @@
+// https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/Betas.html
+
 // Beta values by sector (mock data based on typical values)
 export const SECTOR_BETAS: Record<string, number> = {
   Advertising: 1.34,

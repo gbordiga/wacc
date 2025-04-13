@@ -1,3 +1,5 @@
+// https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4754347
+
 export const MRP_BY_COUNTRY = {
   AbuDhabi: 0.06,
   Andorra: 0.082,

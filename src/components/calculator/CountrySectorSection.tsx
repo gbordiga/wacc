@@ -157,7 +157,7 @@ export function CountrySectorSection({
                 onChange={handleMarketCapChange}
               />
               <FormDescription>
-                Company size in millions of EUR determines the size premium
+                Company size in millions of USD determines the size premium
                 (Duff & Phelps, 2023)
               </FormDescription>
             </FormItem>
