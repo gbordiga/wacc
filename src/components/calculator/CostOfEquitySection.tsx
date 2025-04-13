@@ -26,7 +26,7 @@ export function CostOfEquitySection({ form }: CostOfEquitySectionProps) {
     <div>
       <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
         <Percent className="h-5 w-5" />
-        Cost of Equity Components
+        Cost of Equity Parameters
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <FormField
