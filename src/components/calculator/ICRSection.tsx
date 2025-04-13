@@ -46,18 +46,38 @@ export function ICRSection({ form, updateICR, icr }: ICRSectionProps) {
             <FormItem>
               <FormLabel>EBIT</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  min="0"
-                  value={field.value}
-                  onChange={(e) => {
-                    const value = parseFloat(e.target.value);
-                    if (!isNaN(value)) {
-                      field.onChange(value);
-                      setTimeout(updateICR, 0);
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    $
+                  </span>
+                  <Input
+                    type="text"
+                    className="pl-6"
+                    value={
+                      field.value
+                        ? field.value.toLocaleString("en-US", {
+                            maximumFractionDigits: 0,
+                            useGrouping: true,
+                          })
+                        : ""
                     }
-                  }}
-                />
+                    onChange={(e) => {
+                      // Remove all non-numeric characters for processing
+                      const rawValue = e.target.value.replace(/[^0-9]/g, "");
+
+                      // Convert to number or use empty string if backspaced to nothing
+                      const value = rawValue ? parseInt(rawValue, 10) : "";
+
+                      // Update the form
+                      field.onChange(value);
+
+                      // Trigger ICR calculation if we have a value
+                      if (value) {
+                        setTimeout(updateICR, 0);
+                      }
+                    }}
+                  />
+                </div>
               </FormControl>
               <FormDescription>
                 Earnings Before Interest and Taxes
@@ -73,18 +93,38 @@ export function ICRSection({ form, updateICR, icr }: ICRSectionProps) {
             <FormItem>
               <FormLabel>Interest Expense</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  min="0"
-                  value={field.value}
-                  onChange={(e) => {
-                    const value = parseFloat(e.target.value);
-                    if (!isNaN(value)) {
-                      field.onChange(value);
-                      setTimeout(updateICR, 0);
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    $
+                  </span>
+                  <Input
+                    type="text"
+                    className="pl-6"
+                    value={
+                      field.value
+                        ? field.value.toLocaleString("en-US", {
+                            maximumFractionDigits: 0,
+                            useGrouping: true,
+                          })
+                        : ""
                     }
-                  }}
-                />
+                    onChange={(e) => {
+                      // Remove all non-numeric characters for processing
+                      const rawValue = e.target.value.replace(/[^0-9]/g, "");
+
+                      // Convert to number or use empty string if backspaced to nothing
+                      const value = rawValue ? parseInt(rawValue, 10) : "";
+
+                      // Update the form
+                      field.onChange(value);
+
+                      // Trigger ICR calculation if we have a value
+                      if (value) {
+                        setTimeout(updateICR, 0);
+                      }
+                    }}
+                  />
+                </div>
               </FormControl>
               <FormDescription>Annual interest payment</FormDescription>
             </FormItem>
