@@ -7,9 +7,27 @@ import { Toaster } from "sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "WACC Calculator",
+  title: "WACC Calculator | wacc.less.style",
   description:
     "Calculate the Weighted Average Cost of Capital (WACC) and Cost of Equity for your business",
+  metadataBase: new URL("https://wacc.less.style"),
+  creator: "Giacomo Bordiga",
+  keywords: [
+    "WACC",
+    "financial calculator",
+    "weighted average cost of capital",
+    "finance",
+    "investment",
+  ],
+  openGraph: {
+    title: "WACC Calculator | wacc.less.style",
+    description:
+      "Calculate the Weighted Average Cost of Capital (WACC) for your business",
+    url: "https://wacc.less.style",
+    type: "website",
+  },
+  manifest: "/manifest.json",
+  themeColor: "#5135E8",
 };
 
 export default function RootLayout({
@@ -26,7 +44,19 @@ export default function RootLayout({
           <footer className="py-6 text-center border-t">
             <div className="container mx-auto">
               <p className="text-sm text-muted-foreground">
-                WACC Calculator © {new Date().getFullYear()}
+                <a
+                  href="https://wacc.less.style"
+                  className="hover:text-primary transition-colors"
+                >
+                  wacc.less.style
+                </a>{" "}
+                © {new Date().getFullYear()} • Created by{" "}
+                <a
+                  href="https://github.com/gbordiga/wacc"
+                  className="font-medium hover:text-primary transition-colors"
+                >
+                  Giacomo Bordiga
+                </a>
               </p>
             </div>
           </footer>
