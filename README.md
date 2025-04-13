@@ -57,3 +57,9 @@ Visit `http://localhost:3000` to use the calculator.
 - Industry betas and sector data: Damodaran January 2025
 - Marginal tax rates: Global tax database
 - Size premiums: Duff & Phelps research
+
+## License
+
+This project is licensed under the GNU Affero General Public License v3.0 (AGPLv3) - see the [LICENSE](LICENSE) file for details.
+
+The AGPLv3 license requires that if you modify and use this software on a server that users interact with (such as a SaaS application), you must make your modified source code available to users. This ensures that improvements to the software remain open and available to the community.
