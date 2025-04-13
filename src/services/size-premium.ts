@@ -37,41 +37,41 @@ function formatMarketCap(value: number): string {
 }
 
 /**
- * Gets the appropriate size premium based on market capitalization in millions of EUR
- * @param marketCapMlnEUR Market capitalization in millions of EUR
+ * Gets the appropriate size premium based on market capitalization in millions of USD
+ * @param marketCapMlnUSD Market capitalization in millions of USD
  * @returns Size premium as a decimal (e.g., 0.0229 for 2.29%)
  */
-export function getSizePremium(marketCapMlnEUR: number): number {
+export function getSizePremium(marketCapMlnUSD: number): number {
   return (
     SIZE_PREMIUM_TABLE.find(
-      (entry) => marketCapMlnEUR >= entry.min && marketCapMlnEUR <= entry.max
+      (entry) => marketCapMlnUSD >= entry.min && marketCapMlnUSD <= entry.max
     )?.premium ?? 0
   );
 }
 
 /**
  * Gets the appropriate size premium formatted as a percentage string
- * @param marketCapMlnEUR Market capitalization in millions of EUR
+ * @param marketCapMlnUSD Market capitalization in millions of USD
  * @returns Size premium as a percentage string (e.g., "2.29%")
  */
-export function getFormattedSizePremium(marketCapMlnEUR: number): string {
-  const premium = getSizePremium(marketCapMlnEUR);
+export function getFormattedSizePremium(marketCapMlnUSD: number): string {
+  const premium = getSizePremium(marketCapMlnUSD);
   return `${(premium * 100).toFixed(2)}%`;
 }
 
 /**
  * Gets the market cap size range description for a given market cap
- * @param marketCapMlnEUR Market capitalization in millions of EUR
+ * @param marketCapMlnUSD Market capitalization in millions of USD
  * @returns Description of the size range
  */
-export function getSizeCategory(marketCapMlnEUR: number): string {
-  if (marketCapMlnEUR >= 25275) {
+export function getSizeCategory(marketCapMlnUSD: number): string {
+  if (marketCapMlnUSD >= 25275) {
     return "Very Large Cap";
-  } else if (marketCapMlnEUR >= 5916) {
+  } else if (marketCapMlnUSD >= 5916) {
     return "Large Cap";
-  } else if (marketCapMlnEUR >= 1397) {
+  } else if (marketCapMlnUSD >= 1397) {
     return "Mid Cap";
-  } else if (marketCapMlnEUR >= 167) {
+  } else if (marketCapMlnUSD >= 167) {
     return "Small Cap";
   } else {
     return "Micro Cap";
@@ -89,9 +89,9 @@ export function getSizePremiumRanges(): Array<
     let description = "";
 
     if (entry.max === Infinity) {
-      description = `€${formatMarketCap(entry.min)} and above`;
+      description = `$${formatMarketCap(entry.min)} and above`;
     } else {
-      description = `€${formatMarketCap(entry.min)} to €${formatMarketCap(
+      description = `$${formatMarketCap(entry.min)} to $${formatMarketCap(
         entry.max
       )}`;
     }
