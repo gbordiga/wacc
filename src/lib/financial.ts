@@ -15,6 +15,8 @@ export interface WACCParams extends CostOfEquityParams {
   debtRatio: number; // D/(D+E) - Debt ratio (%)
   equityRatio: number; // E/(D+E) - Equity ratio (%)
   costOfDebt: number; // kd - Cost of debt (%)
+  debtRiskFreeRate?: number; // rf_debt - Risk-free rate for debt (%)
+  spreadRate?: number; // sp - Debt spread (%)
   taxRate: number; // T - Corporate tax rate (%)
 }
 

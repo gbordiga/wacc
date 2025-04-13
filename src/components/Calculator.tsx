@@ -80,9 +80,9 @@ export default function Calculator() {
         sizePremium: ensureNumber(data.sizePremium),
         marketCap: ensureNumber(data.marketCap),
         costOfDebt: ensureNumber(data.costOfDebt),
-        taxRate: ensureNumber(data.taxRate),
-        spreadRate: ensureNumber(data.spreadRate),
         debtRiskFreeRate: ensureNumber(data.debtRiskFreeRate),
+        spreadRate: ensureNumber(data.spreadRate),
+        taxRate: ensureNumber(data.taxRate),
         ebit: data.ebit ? ensureNumber(data.ebit) : undefined,
         interestExpense: data.interestExpense
           ? ensureNumber(data.interestExpense)

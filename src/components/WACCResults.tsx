@@ -48,6 +48,8 @@ export default function WACCResults({ result }: WACCResultsProps) {
     sizePremium: parseFloat(safeToFixed(inputs.sizePremium, 2)),
     additionalRisk: parseFloat(safeToFixed(inputs.additionalRisk, 2)),
     costOfDebt: parseFloat(safeToFixed(inputs.costOfDebt)),
+    debtRiskFreeRate: parseFloat(safeToFixed(inputs.debtRiskFreeRate)),
+    spreadRate: parseFloat(safeToFixed(inputs.spreadRate)),
     taxRate: parseFloat(safeToFixed(inputs.taxRate)),
     country: inputs.country,
     sector: inputs.sector,
@@ -122,10 +124,7 @@ export default function WACCResults({ result }: WACCResultsProps) {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-center">
-              {formatPercentage(
-                (safeCostOfDebt * (1 - safeInputs.taxRate / 100)) / 100,
-                2
-              )}
+              {formatPercentage(safeCostOfDebt / 100, 2)}
             </div>
           </CardContent>
         </Card>
@@ -296,7 +295,7 @@ export default function WACCResults({ result }: WACCResultsProps) {
                   className="bg-blue-500 h-full flex items-center justify-center text-xs font-medium"
                   style={{
                     width: `${
-                      (safeInputs.riskFreeRate / safeCostOfDebt) * 100
+                      (safeInputs.debtRiskFreeRate / safeCostOfDebt) * 100
                     }%`,
                   }}
                 >
@@ -305,47 +304,23 @@ export default function WACCResults({ result }: WACCResultsProps) {
                 <div
                   className="bg-green-500 h-full flex items-center justify-center text-xs font-medium"
                   style={{
-                    width: `${
-                      ((safeInputs.costOfDebt - safeInputs.riskFreeRate) /
-                        safeCostOfDebt) *
-                      100
-                    }%`,
+                    width: `${(safeInputs.spreadRate / safeCostOfDebt) * 100}%`,
                   }}
                 >
                   Spread
-                </div>
-                <div
-                  className="bg-red-500 h-full flex items-center justify-center text-xs font-medium"
-                  style={{
-                    width: `${
-                      ((safeInputs.costOfDebt * (safeInputs.taxRate / 100)) /
-                        safeCostOfDebt) *
-                      100
-                    }%`,
-                    opacity: 0.5,
-                  }}
-                >
-                  Tax Shield
                 </div>
               </div>
 
               <div className="p-3 bg-muted rounded-md">
                 <p className="font-mono text-sm">
-                  k<sub>d</sub> = (r<sub>f</sub> + spread) × (1 - t)
+                  k<sub>d</sub> = r<sub>f</sub> + spread
                 </p>
                 <p className="font-mono text-sm mt-2">
-                  k<sub>d</sub> = ({safeToFixed(safeInputs.riskFreeRate)}% +
-                  {safeToFixed(safeInputs.costOfDebt - safeInputs.riskFreeRate)}
-                  %) × (1 - {safeToFixed(safeInputs.taxRate)}%)
-                </p>
-                <p className="font-mono text-sm mt-2">
-                  k<sub>d</sub> = {safeToFixed(safeInputs.costOfDebt)}% ×
-                  {safeToFixed(1 - safeInputs.taxRate / 100, 3)}
+                  k<sub>d</sub> = {safeToFixed(safeInputs.debtRiskFreeRate)}% +{" "}
+                  {safeToFixed(safeInputs.spreadRate)}%
                 </p>
                 <p className="font-mono text-sm mt-2 font-bold">
-                  k<sub>d</sub> ={" "}
-                  {safeToFixed(safeCostOfDebt * (1 - safeInputs.taxRate / 100))}
-                  %
+                  k<sub>d</sub> = {safeToFixed(safeInputs.costOfDebt)}%
                 </p>
               </div>
             </div>

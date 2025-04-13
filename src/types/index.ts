@@ -61,7 +61,9 @@ export interface WACCInputs {
   marketCap: number; // Market capitalization in millions EUR
 
   // Cost of debt components
-  costOfDebt: number;
+  costOfDebt: number; // Pre-tax cost of debt
+  debtRiskFreeRate: number; // Risk-free rate for debt
+  spreadRate: number; // Debt spread over risk-free rate
   taxRate: number;
 
   // Metadata

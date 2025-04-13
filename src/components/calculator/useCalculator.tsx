@@ -69,7 +69,8 @@ export function useCalculator() {
     try {
       const companyType =
         (form.getValues("companyType") as CompanyType) || "largeNonFinancial";
-      const debtRiskFreeRate = form.getValues("debtRiskFreeRate");
+      // Make sure to use debtRiskFreeRate not riskFreeRate for debt calculations
+      const debtRiskFreeRate = form.getValues("debtRiskFreeRate") || 0;
 
       // Use user-provided spread if manual input is preferred,
       // or calculate it from ICR and company type
@@ -85,10 +86,15 @@ export function useCalculator() {
       }
 
       // Get the current spread value (either calculated or manually set)
-      const currentSpread = form.getValues("spreadRate");
+      const currentSpread = form.getValues("spreadRate") || 0;
 
       // Calculate cost of debt: risk-free rate + company risk (spread)
       const costOfDebt = formatNumber(debtRiskFreeRate + currentSpread);
+      console.log("Calculated Cost of Debt:", {
+        debtRiskFreeRate,
+        currentSpread,
+        costOfDebt,
+      });
 
       // Update the form
       form.setValue("costOfDebt", costOfDebt);

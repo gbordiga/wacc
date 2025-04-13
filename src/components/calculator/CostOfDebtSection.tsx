@@ -42,10 +42,22 @@ export function CostOfDebtSection({ form, updateICR }: CostOfDebtSectionProps) {
     name: "riskFreeRate",
   });
 
-  // Sync debtRiskFreeRate with riskFreeRate initially
+  // Sync debtRiskFreeRate with riskFreeRate initially and when riskFreeRate changes
   useEffect(() => {
-    form.setValue("debtRiskFreeRate", formatNumber(riskFreeRate || 0));
-  }, [riskFreeRate, form]);
+    // Only update if debtRiskFreeRate hasn't been manually changed
+    const currentDebtRiskFreeRate = form.getValues("debtRiskFreeRate");
+    const formattedRiskFreeRate = formatNumber(riskFreeRate || 0);
+
+    if (
+      currentDebtRiskFreeRate === undefined ||
+      currentDebtRiskFreeRate === null
+    ) {
+      form.setValue("debtRiskFreeRate", formattedRiskFreeRate);
+    }
+
+    // Update cost of debt whenever risk-free rate changes
+    updateICR();
+  }, [riskFreeRate, form, updateICR]);
 
   // Run updateICR when any of the watched values change
   useEffect(() => {

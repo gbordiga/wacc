@@ -56,6 +56,8 @@ export async function POST(req: NextRequest) {
       equityRatio: inputs.equityRatio,
       debtRatio: inputs.debtRatio,
       costOfDebt: inputs.costOfDebt,
+      debtRiskFreeRate: inputs.debtRiskFreeRate,
+      spreadRate: inputs.spreadRate,
       taxRate: inputs.taxRate,
     });
 
