@@ -47,9 +47,10 @@ Visit `http://localhost:3000` to use the calculator.
 ## Data sources
 
 - **Risk-Free Rate and Market Risk Premium**: Fernandez, [Survey: Market Risk Premium and Risk-Free Rate](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4754347)
-- **Beta by Industry**: Damodaran, [Betas by Sector (US)](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/Betas.html)
+- **Beta by Industry**: Damodaran, [Betas by Sector, Global](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datacurrent.html#discrate)
 - **Corporate Marginal Tax Rates**: Damodaran, [Corporate Marginal Tax Rates - By country](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/countrytaxrates.html)
 - **Size Risk Premium**: Duff & Phelps
+- Debt Default Spread: Damodaran [Ratings, Interest Coverage Ratios and Default Spread](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html)
 
 ## License
 
