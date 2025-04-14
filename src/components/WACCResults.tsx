@@ -43,6 +43,7 @@ export default function WACCResults({ result }: WACCResultsProps) {
     debtRatio: parseFloat(safeToFixed(inputs.debtRatio)),
     riskFreeRate: parseFloat(safeToFixed(inputs.riskFreeRate)),
     beta: parseFloat(safeToFixed(inputs.beta)),
+    leveredBeta: parseFloat(safeToFixed(inputs.leveredBeta || inputs.beta)),
     marketRiskPremium: parseFloat(safeToFixed(inputs.marketRiskPremium)),
     countryRiskPremium: parseFloat(safeToFixed(inputs.countryRiskPremium)),
     sizePremium: parseFloat(safeToFixed(inputs.sizePremium, 2)),
@@ -127,7 +128,11 @@ export default function WACCResults({ result }: WACCResultsProps) {
               {formatPercentage(safeCostOfDebt / 100, 2)}
             </div>
             <div className="text-sm text-muted-foreground text-center mt-2">
-              Tax effect: {formatPercentage(safeCostOfDebt/100*(- safeInputs.taxRate/100), 2)}
+              Tax effect:{" "}
+              {formatPercentage(
+                (safeCostOfDebt / 100) * (-safeInputs.taxRate / 100),
+                2
+              )}
             </div>
           </CardContent>
         </Card>
@@ -270,16 +275,34 @@ export default function WACCResults({ result }: WACCResultsProps) {
                   k<sub>e</sub> = r<sub>f</sub> + β × MRP + SP + AR
                 </p>
                 <p className="font-mono text-sm mt-2">
+                  β<sub>U</sub> (Unlevered) = {safeToFixed(safeInputs.beta)}
+                </p>
+                <p className="font-mono text-sm mt-2">
+                  β<sub>L</sub> (Levered) = β<sub>U</sub> × [1 + (1 - Tax Rate)
+                  × (Debt ÷ Equity)]
+                </p>
+                <p className="font-mono text-sm mt-2">
+                  β<sub>L</sub> = {safeToFixed(safeInputs.beta)} × [1 + (1 -{" "}
+                  {safeToFixed(safeInputs.taxRate)}% ÷ 100) × (
+                  {safeInputs.debtRatio.toFixed(0)}% ÷{" "}
+                  {safeInputs.equityRatio.toFixed(0)}%)]
+                </p>
+                <p className="font-mono text-sm mt-2">
+                  β<sub>L</sub> = {safeToFixed(safeInputs.leveredBeta)}
+                </p>
+                <p className="font-mono text-sm mt-4">
                   k<sub>e</sub> = {safeToFixed(safeInputs.riskFreeRate)}% +{" "}
-                  {safeToFixed(safeInputs.beta)} ×{" "}
+                  {safeToFixed(safeInputs.leveredBeta)} ×{" "}
                   {safeToFixed(safeInputs.marketRiskPremium)}% +{" "}
                   {safeToFixed(safeInputs.sizePremium)}% +{" "}
                   {safeToFixed(safeInputs.additionalRisk)}%
                 </p>
                 <p className="font-mono text-sm mt-2">
                   k<sub>e</sub> = {safeToFixed(safeInputs.riskFreeRate)}% +{" "}
-                  {safeToFixed(safeInputs.beta * safeInputs.marketRiskPremium)}%
-                  + {safeToFixed(safeInputs.sizePremium)}% +{" "}
+                  {safeToFixed(
+                    safeInputs.leveredBeta * safeInputs.marketRiskPremium
+                  )}
+                  % + {safeToFixed(safeInputs.sizePremium)}% +{" "}
                   {safeToFixed(safeInputs.additionalRisk)}%
                 </p>
                 <p className="font-mono text-sm mt-2 font-bold">

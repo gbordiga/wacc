@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { calculateCostOfEquity, calculateWACC } from "@/lib/financial";
+import {
+  calculateCostOfEquity,
+  calculateWACC,
+  calculateLeveredBeta,
+} from "@/lib/financial";
 import { WACCInputs, CalculationResult } from "@/types";
 
 /**
@@ -35,20 +39,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Calculate Cost of Equity
+    // Calculate levered beta from unlevered beta using the capital structure
+    const leveredBeta = calculateLeveredBeta(
+      inputs.beta,
+      inputs.debtRatio,
+      inputs.equityRatio,
+      inputs.taxRate
+    );
+
+    // Calculate Cost of Equity with levered beta
     const costOfEquity = calculateCostOfEquity({
       riskFreeRate: inputs.riskFreeRate,
-      beta: inputs.beta,
+      beta: leveredBeta,
       marketRiskPremium: inputs.marketRiskPremium,
       countryRiskPremium: inputs.countryRiskPremium,
       sizePremium: inputs.sizePremium,
       additionalRisk: inputs.additionalRisk,
     });
 
-    // Calculate WACC
+    // Calculate WACC with levered beta
     const wacc = calculateWACC({
       riskFreeRate: inputs.riskFreeRate,
-      beta: inputs.beta,
+      beta: leveredBeta,
       marketRiskPremium: inputs.marketRiskPremium,
       countryRiskPremium: inputs.countryRiskPremium,
       sizePremium: inputs.sizePremium,
@@ -66,7 +78,10 @@ export async function POST(req: NextRequest) {
       costOfEquity,
       costOfDebt: inputs.costOfDebt,
       wacc,
-      inputs,
+      inputs: {
+        ...inputs,
+        leveredBeta,
+      },
       timestamp: new Date(),
     };
 

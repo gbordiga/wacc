@@ -4,7 +4,7 @@
 
 export interface CostOfEquityParams {
   riskFreeRate: number; // rf - Risk-free rate (%)
-  beta: number; // β - Beta coefficient
+  beta: number; // β - Beta coefficient (unlevered)
   marketRiskPremium: number; // MRP - Market risk premium (%)
   countryRiskPremium: number; // α - Country risk premium (%)
   additionalRisk: number; // ER - Additional risk (small size, etc.) (%)
@@ -18,6 +18,39 @@ export interface WACCParams extends CostOfEquityParams {
   debtRiskFreeRate?: number; // rf_debt - Risk-free rate for debt (%)
   spreadRate?: number; // sp - Debt spread (%)
   taxRate: number; // T - Corporate tax rate (%)
+}
+
+/**
+ * Calculate Levered Beta from Unlevered Beta
+ * Formula: βL = βU × [1 + (1 – T) × (D ÷ E)]
+ * Where:
+ * - βL: Levered beta
+ * - βU: Unlevered beta
+ * - T: Tax rate (as decimal)
+ * - D: Debt value
+ * - E: Equity value
+ */
+export function calculateLeveredBeta(
+  unleveredBeta: number,
+  debtRatio: number,
+  equityRatio: number,
+  taxRate: number
+): number {
+  // Convert percentage values to decimal
+  const taxRateDecimal = taxRate / 100;
+  const debtRatioDecimal = debtRatio / 100;
+  const equityRatioDecimal = equityRatio / 100;
+
+  // Calculate debt to equity ratio
+  let debtToEquity = 0;
+  if (equityRatioDecimal > 0) {
+    debtToEquity = debtRatioDecimal / equityRatioDecimal;
+  }
+
+  // Formula: βL = βU × [1 + (1 – T) × (D ÷ E)]
+  const leveredBeta = unleveredBeta * (1 + (1 - taxRateDecimal) * debtToEquity);
+
+  return parseFloat(leveredBeta.toFixed(2));
 }
 
 /**

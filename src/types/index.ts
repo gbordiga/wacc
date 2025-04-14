@@ -53,7 +53,8 @@ export interface WACCInputs {
 
   // Cost of equity components
   riskFreeRate: number;
-  beta: number;
+  beta: number; // Unlevered beta from industry sector
+  leveredBeta?: number; // Calculated levered beta based on capital structure
   marketRiskPremium: number;
   countryRiskPremium: number;
   additionalRisk: number;

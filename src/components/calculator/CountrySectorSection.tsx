@@ -153,8 +153,8 @@ export function CountrySectorSection({
               <FormLabel>Industry Sector</FormLabel>
               <SectorSelector value={field.value} onChange={onSectorChange} />
               <FormDescription>
-                Determines the beta for the calculation (Damodaran, January
-                2025, Global Betas)
+                Determines the unlevered beta for the calculation (Damodaran,
+                January 2025, Global Betas, Effective Tax)
               </FormDescription>
             </FormItem>
           )}
