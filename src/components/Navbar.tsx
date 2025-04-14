@@ -27,6 +27,12 @@ export default function Navbar() {
             Calculator
           </Link>
           <Link
+            href="/guide"
+            className="text-sm font-medium hover:text-primary transition-colors"
+          >
+            WACC Guide
+          </Link>
+          <Link
             href="https://github.com/gbordiga/wacc"
             className="text-sm font-medium hover:text-primary transition-colors"
           >
