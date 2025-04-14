@@ -259,42 +259,67 @@ export function getFormattedTaxRate(country: string): string {
 }
 
 /**
- * Finds the closest matching country in the tax data
- * @param query The country name to search for
- * @returns The closest matching country name or null if no match found
+ * Find the closest matching tax country based on common aliases and substring matching
+ * @param query The country name or alias to search for
+ * @returns The closest matching tax country name or null if no match found
  */
 export function findClosestTaxCountry(query: string): string | null {
-  const countries = getTaxCountries();
-
-  // Direct match
-  if (countries.includes(query)) return query;
-
-  // Common mappings
+  // Common country name mappings
   const countryMappings: Record<string, string> = {
     USA: "United States of America",
+    US: "United States of America",
+    "United States": "United States of America",
     UK: "United Kingdom of Great Britain and Northe",
-    GB: "United Kingdom of Great Britain and Northe",
+    "Great Britain": "United Kingdom of Great Britain and Northe",
     England: "United Kingdom of Great Britain and Northe",
     UAE: "United Arab Emirates",
-    Russia: "Russian Federation",
-    Korea: "Republic of Korea",
     "South Korea": "Republic of Korea",
+    "Hong Kong": "China, Hong Kong Special Administrative Re",
+    Macau: "China, Macao Special Administrative Region",
+    Russia: "Russian Federation",
+    Vietnam: "Viet Nam",
+    Macedonia: "The former Yugoslav Republic of Macedonia",
+    Tanzania: "United Republic of Tanzania",
+    Venezuela: "Venezuela (Bolivarian Republic of)",
+    Bolivia: "Bolivia (Plurinational State of)",
+    Iran: "Iran (Islamic Republic of)",
+    Syria: "Syrian Arab Republic",
+    Taiwan: "Taiwan",
+    Palestine: "State of Palestine",
+    Laos: "Lao People's Democratic Republic",
+    Moldova: "Republic of Moldova",
+    Phillipines: "Philippines",
+    "Nrth Macedonia": "The former Yugoslav Republic of Macedonia",
+    AbuDhabi: "United Arab Emirates",
+    "Korea, (South)": "Republic of Korea",
+    "Trinidad and Tobago": "Trinidad and Tobago",
+    "Czech Republic": "Czechia",
+    "Saudi Arabia": "Saudi Arabia",
+    Bosnia: "Bosnia and Herzegovina",
   };
 
-  // Check mapping
-  if (countryMappings[query] && countries.includes(countryMappings[query])) {
+  // Direct mapping match
+  if (countryMappings[query]) {
     return countryMappings[query];
   }
 
-  // Try to find by partial match
-  const partialMatches = countries.filter(
-    (c) =>
-      c.toLowerCase().includes(query.toLowerCase()) ||
-      query.toLowerCase().includes(c.toLowerCase())
+  // Try to find an exact match
+  const taxCountries = getTaxCountries();
+  const exactMatch = taxCountries.find(
+    (country) => country.toLowerCase() === query.toLowerCase()
+  );
+  if (exactMatch) return exactMatch;
+
+  // Try to find a partial match
+  const partialMatches = taxCountries.filter(
+    (country) =>
+      country.toLowerCase().includes(query.toLowerCase()) ||
+      query.toLowerCase().includes(country.toLowerCase())
   );
 
   if (partialMatches.length > 0) {
-    return partialMatches[0];
+    // Return the shortest matching country name as it's likely the most specific
+    return partialMatches.sort((a, b) => a.length - b.length)[0];
   }
 
   return null;

@@ -33,7 +33,9 @@ export function CountrySectorSection({
 }: CountrySectorSectionProps) {
   const [taxCountries, setTaxCountries] = useState<string[]>([]);
   const [isManualTaxRate, setIsManualTaxRate] = useState(false);
+  const [isManualTaxCountry, setIsManualTaxCountry] = useState(false);
   const currentCountry = form.watch("country");
+  const currentTaxCountry = form.watch("taxCountry");
 
   // Watch for changes to taxRate to detect manual edits
   const taxRate = form.watch("taxRate");
@@ -63,14 +65,15 @@ export function CountrySectorSection({
   // Reset manual flag when tax country is explicitly selected
   const handleTaxSelectorChange = useCallback(
     (taxRate: number, newCountry?: string) => {
-      // Update both the tax country and tax rate
-      if (newCountry) {
-        form.setValue("taxCountry", newCountry);
-        // When user explicitly selects a tax country in the tax selector,
-        // we should update the tax rate and reset the manual flag
-        form.setValue("taxRate", taxRate * 100); // Convert decimal to percentage
-        setIsManualTaxRate(false);
-      }
+      if (!newCountry) return;
+
+      // User has explicitly selected a tax country
+      setIsManualTaxCountry(true);
+      form.setValue("taxCountry", newCountry);
+
+      // Update tax rate and reset the manual tax rate flag
+      form.setValue("taxRate", taxRate * 100); // Convert decimal to percentage
+      setIsManualTaxRate(false);
     },
     [form]
   );
@@ -89,7 +92,7 @@ export function CountrySectorSection({
 
   // Try to find and set the tax rate when the main country changes
   useEffect(() => {
-    if (!currentCountry) return;
+    if (!currentCountry || isManualTaxCountry) return;
 
     // First try direct match
     if (taxCountries.includes(currentCountry)) {
@@ -103,7 +106,13 @@ export function CountrySectorSection({
       form.setValue("taxCountry", closestMatch);
       handleTaxCountryChange(closestMatch);
     }
-  }, [currentCountry, taxCountries, form, handleTaxCountryChange]);
+  }, [
+    currentCountry,
+    taxCountries,
+    form,
+    handleTaxCountryChange,
+    isManualTaxCountry,
+  ]);
 
   // Detect manual changes to tax rate
   useEffect(() => {
@@ -122,6 +131,12 @@ export function CountrySectorSection({
     }
   }, [taxRate, form]);
 
+  // Reset manual tax country flag when user explicitly selects the main country
+  const handleMainCountryChange = (countryCode: string) => {
+    setIsManualTaxCountry(false);
+    onCountryChange(countryCode);
+  };
+
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
@@ -136,7 +151,10 @@ export function CountrySectorSection({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Country</FormLabel>
-              <CountrySelector value={field.value} onChange={onCountryChange} />
+              <CountrySelector
+                value={field.value}
+                onChange={handleMainCountryChange}
+              />
               <FormDescription>
                 Determines risk-free rate and market risk premium (
                 <a
