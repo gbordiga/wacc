@@ -154,7 +154,7 @@ export function CountrySectorSection({
               <SectorSelector value={field.value} onChange={onSectorChange} />
               <FormDescription>
                 Determines the beta for the calculation (Damodaran, January
-                2025)
+                2025, Global Betas)
               </FormDescription>
             </FormItem>
           )}
