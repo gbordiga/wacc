@@ -35,7 +35,6 @@ export function CountrySectorSection({
   const [isManualTaxRate, setIsManualTaxRate] = useState(false);
   const [isManualTaxCountry, setIsManualTaxCountry] = useState(false);
   const currentCountry = form.watch("country");
-  const currentTaxCountry = form.watch("taxCountry");
 
   // Watch for changes to taxRate to detect manual edits
   const taxRate = form.watch("taxRate");
