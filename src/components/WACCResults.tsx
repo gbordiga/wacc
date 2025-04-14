@@ -119,12 +119,15 @@ export default function WACCResults({ result }: WACCResultsProps) {
               Cost of Debt (k<sub>d</sub>)
             </CardTitle>
             <CardDescription className="text-center">
-              Expected return by lenders, net of tax
+              Expected return by lenders
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-center">
               {formatPercentage(safeCostOfDebt / 100, 2)}
+            </div>
+            <div className="text-sm text-muted-foreground text-center mt-2">
+              Tax effect: {formatPercentage(safeCostOfDebt/100*(- safeInputs.taxRate/100), 2)}
             </div>
           </CardContent>
         </Card>
