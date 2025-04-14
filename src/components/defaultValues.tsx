@@ -5,7 +5,7 @@ export const defaultValues: FormValues = {
   equityRatio: 40,
   debtRatio: 60,
   riskFreeRate: 4.1,
-  beta: 1.2,
+  beta: 1.264,
   marketRiskPremium: 5.5,
   additionalRisk: 0.0,
   sizePremium: 0.75,

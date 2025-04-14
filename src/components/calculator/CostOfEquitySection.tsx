@@ -18,7 +18,7 @@ interface CostOfEquitySectionProps {
 
 // Helper function to properly format numbers
 function formatNumber(value: number): number {
-  return parseFloat(value.toFixed(2));
+  return parseFloat(value.toFixed(3));
 }
 
 export function CostOfEquitySection({ form }: CostOfEquitySectionProps) {
@@ -66,7 +66,7 @@ export function CostOfEquitySection({ form }: CostOfEquitySectionProps) {
               <FormControl>
                 <Input
                   type="number"
-                  step="0.01"
+                  step="0.001"
                   min="0"
                   value={formatNumber(field.value || 0)}
                   onChange={(e) => {

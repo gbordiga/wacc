@@ -138,8 +138,16 @@ export function CountrySectorSection({
               <FormLabel>Country</FormLabel>
               <CountrySelector value={field.value} onChange={onCountryChange} />
               <FormDescription>
-                Determines risk-free rate and market risk premium (Fernandez,
-                2024)
+                Determines risk-free rate and market risk premium (
+                <a
+                  href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4754347"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  Fernandez, 2024
+                </a>
+                )
               </FormDescription>
             </FormItem>
           )}
@@ -153,8 +161,16 @@ export function CountrySectorSection({
               <FormLabel>Industry Sector</FormLabel>
               <SectorSelector value={field.value} onChange={onSectorChange} />
               <FormDescription>
-                Determines the unlevered beta for the calculation (Damodaran,
-                January 2025, Global Betas, Effective Tax)
+                Determines the unlevered beta for the calculation (
+                <a
+                  href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datacurrent.html#discrate"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  Damodaran, January 2025, Global Betas, Effective Tax
+                </a>
+                )
               </FormDescription>
             </FormItem>
           )}
@@ -173,8 +189,16 @@ export function CountrySectorSection({
                 onChange={handleTaxSelectorChange}
               />
               <FormDescription>
-                Determines the marginal tax rate for cost of debt calculation
-                (Damodaran, January 2025)
+                Determines the marginal tax rate for cost of debt calculation (
+                <a
+                  href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/countrytaxrates.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  Damodaran, January 2025
+                </a>
+                )
               </FormDescription>
             </FormItem>
           )}

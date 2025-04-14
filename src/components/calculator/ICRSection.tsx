@@ -36,7 +36,16 @@ export function ICRSection({ form, updateICR, icr }: ICRSectionProps) {
         </div>
       </h3>
       <p className="text-sm text-gray-500 mb-4">
-        Determines the debt spread premium (Damodaran, January 2025)
+        Determines the debt spread premium (
+        <a
+          href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:text-blue-800 underline"
+        >
+          Damodaran, January 2025
+        </a>
+        )
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <FormField

@@ -1,3 +1,5 @@
+// https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html
+
 export type CompanyType =
   | "largeNonFinancial"
   | "financial"

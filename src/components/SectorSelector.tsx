@@ -27,7 +27,7 @@ export default function SectorSelector({
         ) : (
           sectors.map((sector) => (
             <option key={sector.name} value={sector.name}>
-              {sector.name} {sector.beta ? `(β: ${sector.beta})` : ""}
+              {sector.name} {sector.beta ? `(βU: ${sector.beta})` : ""}
             </option>
           ))
         )}
