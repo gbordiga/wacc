@@ -3,6 +3,7 @@
 import React from "react";
 import "katex/dist/katex.min.css";
 import katex from "katex";
+import Link from "next/link";
 
 interface KaTeXFormulaProps {
   formula: string;
@@ -191,7 +192,83 @@ export default function WACCExplained() {
         </p>
       </section>
 
-      <section className="bg-white p-6 rounded-lg shadow-sm border">
+      <section className="mb-12 bg-white p-6 rounded-lg shadow-sm border">
+        <h2 className="text-2xl font-semibold mb-4 text-primary">
+          Data Sources
+        </h2>
+        <p className="text-base mb-4">
+          Our calculator uses industry-standard financial data from
+          authoritative sources:
+        </p>
+        <ul className="space-y-3 text-sm">
+          <li className="p-3 border rounded-md">
+            <h4 className="font-medium mb-1">
+              Risk-Free Rate & Market Risk Premium
+            </h4>
+            <p className="text-gray-600">
+              Fernandez,{" "}
+              <a
+                href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4754347"
+                className="text-primary hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Survey: Market Risk Premium and Risk-Free Rate
+              </a>
+            </p>
+          </li>
+          <li className="p-3 border rounded-md">
+            <h4 className="font-medium mb-1">Beta by Industry</h4>
+            <p className="text-gray-600">
+              Damodaran,{" "}
+              <a
+                href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datacurrent.html#discrate"
+                className="text-primary hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Betas by Sector, Global
+              </a>
+            </p>
+          </li>
+          <li className="p-3 border rounded-md">
+            <h4 className="font-medium mb-1">Corporate Marginal Tax Rates</h4>
+            <p className="text-gray-600">
+              Damodaran,{" "}
+              <a
+                href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/countrytaxrates.html"
+                className="text-primary hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Corporate Marginal Tax Rates - By country
+              </a>
+            </p>
+          </li>
+          <li className="p-3 border rounded-md">
+            <h4 className="font-medium mb-1">Size Risk Premium</h4>
+            <p className="text-gray-600">
+              Duff & Phelps research and methodology
+            </p>
+          </li>
+          <li className="p-3 border rounded-md">
+            <h4 className="font-medium mb-1">Debt Default Spread</h4>
+            <p className="text-gray-600">
+              Damodaran,{" "}
+              <a
+                href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html"
+                className="text-primary hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ratings, Interest Coverage Ratios and Default Spread
+              </a>
+            </p>
+          </li>
+        </ul>
+      </section>
+
+      <section className="mb-12 bg-white p-6 rounded-lg shadow-sm border">
         <h2 className="text-2xl font-semibold mb-4 text-primary">
           Practical Applications
         </h2>
@@ -217,6 +294,95 @@ export default function WACCExplained() {
               company&apos;s overall cost of capital.
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="bg-white p-6 rounded-lg shadow-sm border">
+        <h2 className="text-2xl font-semibold mb-4 text-primary">
+          Using Our Calculator
+        </h2>
+        <p className="mb-4">
+          Follow these steps to calculate your company&apos;s WACC:
+        </p>
+        <ol className="space-y-3 mb-6">
+          <li className="flex gap-3">
+            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
+              1
+            </span>
+            <div>
+              <p className="font-medium">Select country and industry sector</p>
+              <p className="text-sm text-gray-600">
+                This provides location-specific tax rates and sector-specific
+                unlevered betas
+              </p>
+            </div>
+          </li>
+          <li className="flex gap-3">
+            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
+              2
+            </span>
+            <div>
+              <p className="font-medium">
+                Enter company size (market capitalization)
+              </p>
+              <p className="text-sm text-gray-600">
+                Used to calculate the appropriate size premium
+              </p>
+            </div>
+          </li>
+          <li className="flex gap-3">
+            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
+              3
+            </span>
+            <div>
+              <p className="font-medium">Add financial metrics</p>
+              <p className="text-sm text-gray-600">
+                EBIT and interest expenses help determine the interest coverage
+                ratio
+              </p>
+            </div>
+          </li>
+          <li className="flex gap-3">
+            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
+              4
+            </span>
+            <div>
+              <p className="font-medium">Provide capital structure details</p>
+              <p className="text-sm text-gray-600">
+                The ratio of equity to debt in your company&apos;s financing
+              </p>
+            </div>
+          </li>
+          <li className="flex gap-3">
+            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
+              5
+            </span>
+            <div>
+              <p className="font-medium">Review suggested parameters</p>
+              <p className="text-sm text-gray-600">
+                Adjust any values if needed based on your specific situation
+              </p>
+            </div>
+          </li>
+          <li className="flex gap-3">
+            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
+              6
+            </span>
+            <div>
+              <p className="font-medium">Calculate and analyze the results</p>
+              <p className="text-sm text-gray-600">
+                View a detailed breakdown of your WACC components
+              </p>
+            </div>
+          </li>
+        </ol>
+        <div className="text-center mt-8">
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-6 bg-primary text-white hover:bg-primary/90 transition-colors"
+          >
+            Try the Calculator
+          </Link>
         </div>
       </section>
     </div>
