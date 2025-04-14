@@ -71,7 +71,8 @@ export default function WACCResults({ result }: WACCResultsProps) {
 
   // Calculate Cost of Equity components
   const rfContribution = safeInputs.riskFreeRate;
-  const betaMarketContribution = safeInputs.beta * safeInputs.marketRiskPremium;
+  const betaMarketContribution =
+    safeInputs.leveredBeta * safeInputs.marketRiskPremium;
   const sizePremiumContribution = safeInputs.sizePremium;
   const additionalRiskContribution = safeInputs.additionalRisk;
 
@@ -245,7 +246,7 @@ export default function WACCResults({ result }: WACCResultsProps) {
                     }%`,
                   }}
                 >
-                  β×MRP
+                  β<sub>L</sub>×MRP
                 </div>
 
                 <div
@@ -266,7 +267,7 @@ export default function WACCResults({ result }: WACCResultsProps) {
                     }%`,
                   }}
                 >
-                  α
+                  AR
                 </div>
               </div>
 
