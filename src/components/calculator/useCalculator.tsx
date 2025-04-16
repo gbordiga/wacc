@@ -76,24 +76,35 @@ export function useCalculator() {
       // or calculate it from ICR and company type
       const isAutoCalculated = form.getValues("isAutoCalculated");
 
+      // Get the current spread value before potentially calculating a new one
+      const currentSpread = form.getValues("spreadRate") || 0;
+
+      // Track if spreadRate has been manually changed from its calculated value
+      const hasManuallyChangedSpread = form.getFieldState("spreadRate").isDirty;
+
       let calculatedSpread = 0;
 
-      if (isAutoCalculated) {
+      if (isAutoCalculated && !hasManuallyChangedSpread) {
         // Calculate spread from ICR and company type
         calculatedSpread = getSpreadValue(companyType, interestCoverageRatio);
         // Update the form with the calculated spread rounded to 2 decimal places
         form.setValue("spreadRate", formatNumber(calculatedSpread));
       }
 
-      // Get the current spread value (either calculated or manually set)
-      const currentSpread = form.getValues("spreadRate") || 0;
+      // Use either the calculated spread or the manually set spread
+      const spreadToUse = hasManuallyChangedSpread
+        ? currentSpread
+        : isAutoCalculated
+        ? formatNumber(calculatedSpread)
+        : currentSpread;
 
       // Calculate cost of debt: risk-free rate + company risk (spread)
-      const costOfDebt = formatNumber(debtRiskFreeRate + currentSpread);
+      const costOfDebt = formatNumber(debtRiskFreeRate + spreadToUse);
       console.log("Calculated Cost of Debt:", {
         debtRiskFreeRate,
-        currentSpread,
+        spreadRate: spreadToUse,
         costOfDebt,
+        hasManuallyChangedSpread,
       });
 
       // Update the form

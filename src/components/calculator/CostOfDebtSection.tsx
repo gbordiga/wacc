@@ -55,14 +55,31 @@ export function CostOfDebtSection({ form, updateICR }: CostOfDebtSectionProps) {
       form.setValue("debtRiskFreeRate", formattedRiskFreeRate);
     }
 
-    // Update cost of debt whenever risk-free rate changes
-    updateICR();
+    // Check if spreadRate has been manually changed
+    const spreadRateState = form.getFieldState("spreadRate");
+
+    // Update cost of debt whenever risk-free rate changes, but only if spreadRate hasn't been manually modified
+    if (!spreadRateState.isDirty) {
+      updateICR();
+    } else {
+      // If spreadRate was manually set, just update costOfDebt directly without recalculating the spread
+      const spreadRate = form.getValues("spreadRate") || 0;
+      const debtRiskFreeRate = form.getValues("debtRiskFreeRate") || 0;
+      const newCostOfDebt = formatNumber(debtRiskFreeRate + spreadRate);
+      form.setValue("costOfDebt", newCostOfDebt);
+    }
   }, [riskFreeRate, form, updateICR]);
 
   // Run updateICR when any of the watched values change
   useEffect(() => {
     if (form.getValues("isAutoCalculated")) {
-      updateICR();
+      // Check if spreadRate has been manually changed
+      const spreadRateState = form.getFieldState("spreadRate");
+
+      // Only update ICR if spreadRate hasn't been manually modified
+      if (!spreadRateState.isDirty) {
+        updateICR();
+      }
     }
   }, [ebit, interestExpense, companyType, updateICR, form]);
 
