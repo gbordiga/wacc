@@ -58,7 +58,11 @@ export function CostOfEquitySection({ form }: CostOfEquitySectionProps) {
   const [leveredBeta, setLeveredBeta] = useState<number>(0);
   const isUpdating = useRef(false);
   const isInitialized = useRef(false);
-  const prevBetaMode = useRef<"unlevered" | "levered">("unlevered");
+
+  // Track which beta was last manually set
+  const [lastManuallySet, setLastManuallySet] = useState<
+    "unlevered" | "levered" | null
+  >(null);
 
   // Watch for changes in capital structure and tax rate
   const debtRatio = form.watch("debtRatio");
@@ -71,8 +75,11 @@ export function CostOfEquitySection({ form }: CostOfEquitySectionProps) {
     if (isInitialized.current) return;
     isInitialized.current = true;
 
-    // Set initial values from the form's beta, which should be unlevered
+    // Form's beta is unlevered by convention
     setUnleveredBeta(beta || 0);
+    setLastManuallySet("unlevered"); // Assume initially that unlevered was set
+
+    // Calculate levered beta from unlevered beta
     if (equityRatio > 0) {
       setLeveredBeta(
         calculateLeveredBeta(beta || 0, debtRatio, equityRatio, taxRate)
@@ -80,45 +87,78 @@ export function CostOfEquitySection({ form }: CostOfEquitySectionProps) {
     }
   }, [beta, debtRatio, equityRatio, taxRate]);
 
-  // Track beta changes and update both values
+  // Track beta changes from external sources (like sector selection)
   useEffect(() => {
     if (isUpdating.current) return;
     if (!isInitialized.current) return; // Skip until initialized
-    isUpdating.current = true;
 
-    try {
-      // The form's beta is always the unlevered beta
-      setUnleveredBeta(beta || 0);
-      if (equityRatio > 0) {
-        setLeveredBeta(
-          calculateLeveredBeta(beta || 0, debtRatio, equityRatio, taxRate)
-        );
+    // Only respond to external beta changes (form.beta)
+    // We identify external changes as those not triggered by our handlers
+    const currentUnleveredBeta = unleveredBeta;
+    if (beta !== currentUnleveredBeta) {
+      isUpdating.current = true;
+      try {
+        // This is an external change, switch to unlevered tab
+        setBetaMode("unlevered");
+        setLastManuallySet("unlevered");
+
+        // Update unlevered beta from form
+        setUnleveredBeta(beta || 0);
+
+        // Recalculate levered beta
+        if (equityRatio > 0) {
+          setLeveredBeta(
+            calculateLeveredBeta(beta || 0, debtRatio, equityRatio, taxRate)
+          );
+        }
+      } finally {
+        isUpdating.current = false;
       }
-    } finally {
-      isUpdating.current = false;
     }
-  }, [beta, debtRatio, equityRatio, taxRate]);
+  }, [beta, debtRatio, equityRatio, taxRate, unleveredBeta]);
 
   // Recalculate when capital structure or tax rate changes
   useEffect(() => {
     if (isUpdating.current) return;
     if (equityRatio === 0) return; // Avoid division by zero
     if (!isInitialized.current) return; // Skip until initialized
+    if (!lastManuallySet) return; // Skip if we don't know which value was last set
 
     isUpdating.current = true;
     try {
-      // Always recalculate the levered beta from the unlevered beta
-      const newLeveredBeta = calculateLeveredBeta(
-        unleveredBeta,
-        debtRatio,
-        equityRatio,
-        taxRate
-      );
-      setLeveredBeta(newLeveredBeta);
+      if (lastManuallySet === "unlevered") {
+        // Keep unlevered fixed, recalculate levered
+        const newLeveredBeta = calculateLeveredBeta(
+          unleveredBeta,
+          debtRatio,
+          equityRatio,
+          taxRate
+        );
+        setLeveredBeta(newLeveredBeta);
+      } else {
+        // Keep levered fixed, recalculate unlevered
+        const newUnleveredBeta = calculateUnleveredBeta(
+          leveredBeta,
+          debtRatio,
+          equityRatio,
+          taxRate
+        );
+        setUnleveredBeta(newUnleveredBeta);
+        // Update the form value since it stores unlevered beta
+        form.setValue("beta", newUnleveredBeta);
+      }
     } finally {
       isUpdating.current = false;
     }
-  }, [debtRatio, equityRatio, taxRate, unleveredBeta]);
+  }, [
+    debtRatio,
+    equityRatio,
+    taxRate,
+    unleveredBeta,
+    leveredBeta,
+    lastManuallySet,
+    form,
+  ]);
 
   // Handle unlevered beta change
   const handleUnleveredBetaChange = (value: number) => {
@@ -126,6 +166,9 @@ export function CostOfEquitySection({ form }: CostOfEquitySectionProps) {
     isUpdating.current = true;
 
     try {
+      // Remember that unlevered was last manually set
+      setLastManuallySet("unlevered");
+
       // Set the unlevered beta directly
       setUnleveredBeta(value);
       form.setValue("beta", value);
@@ -151,6 +194,9 @@ export function CostOfEquitySection({ form }: CostOfEquitySectionProps) {
     isUpdating.current = true;
 
     try {
+      // Remember that levered was last manually set
+      setLastManuallySet("levered");
+
       // Set the levered beta directly
       setLeveredBeta(value);
 
@@ -171,9 +217,8 @@ export function CostOfEquitySection({ form }: CostOfEquitySectionProps) {
     }
   };
 
-  // Handle tab change - preserve all values, just change the UI state
+  // Handle tab change
   const handleTabChange = (value: "unlevered" | "levered") => {
-    prevBetaMode.current = betaMode;
     setBetaMode(value);
   };
 
@@ -193,7 +238,7 @@ export function CostOfEquitySection({ form }: CostOfEquitySectionProps) {
               <FormControl>
                 <Input
                   type="number"
-                  step="0.01"
+                  step="0.001"
                   min="0"
                   value={formatNumber(field.value || 0)}
                   onChange={(e) => {
@@ -215,7 +260,7 @@ export function CostOfEquitySection({ form }: CostOfEquitySectionProps) {
         <div className="space-y-2">
           <FormLabel>Beta</FormLabel>
           <Tabs
-            defaultValue={betaMode}
+            value={betaMode}
             onValueChange={(v) => handleTabChange(v as "unlevered" | "levered")}
             className="w-full"
           >
