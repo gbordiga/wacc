@@ -365,7 +365,6 @@ export function CostOfEquitySection({ form }: CostOfEquitySectionProps) {
                 <Input
                   type="number"
                   step="0.01"
-                  min="0"
                   value={formatNumber(field.value || 0)}
                   onChange={(e) => {
                     const value = parseFloat(e.target.value);
