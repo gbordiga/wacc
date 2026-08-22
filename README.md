@@ -27,10 +27,10 @@ A modern web application for calculating the Weighted Average Cost of Capital (W
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Start development server
-npm run dev
+pnpm dev
 ```
 
 Visit `http://localhost:3000` to use the calculator.
