@@ -1,7 +1,7 @@
 {
   "name": "WACC Calculator",
   "short_name": "WACC",
-  "description": "Calculate the Weighted Average Cost of Capital (WACC) for your business",
+  "description": "Free WACC calculator for cost of equity, cost of debt, and weighted average cost of capital",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

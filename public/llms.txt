@@ -1,0 +1,23 @@
+# wacc.less.style
+
+> Free WACC calculator using Damodaran sector betas, Fernandez country risk premiums, Kroll size premiums, and country tax rates.
+
+## Pages
+
+- [WACC Calculator](https://wacc.less.style/): Interactive calculator for weighted average cost of capital, cost of equity (CAPM), and after-tax cost of debt
+- [WACC Guide](https://wacc.less.style/guide): WACC formula, CAPM, levered beta, cost of debt, data sources, and how to use the calculator
+- [WACC vs Cost of Equity](https://wacc.less.style/guide/wacc-vs-cost-of-equity): Cost of equity is the return owners expect; WACC is the blended cost of owners and lenders
+- [Damodaran WACC Calculator](https://wacc.less.style/guide/damodaran-wacc): How Damodaran sector betas, country tax rates, and default spreads are applied
+
+## Calculator method
+
+- Cost of equity: ke = rf + βL × MRP + size premium + additional risk
+- Levered beta: βL = βU × [1 + (1 − T) × (D / E)]
+- Cost of debt: kd = rf + credit spread from interest coverage
+- WACC: (E / V) × ke + (D / V) × kd × (1 − T)
+
+## Data sources
+
+- Fernandez, 2025 (2024 fallback): market risk premium and risk-free rate by country
+- Damodaran, January 2026: global sector betas, country tax rates, ratings and default spreads
+- Kroll, 2025: size risk premium
