@@ -1,0 +1,87 @@
+@page {
+  size: A4;
+  margin: 14mm 16mm 18mm;
+}
+
+@media print {
+  html {
+    color-scheme: light;
+    font-size: 10.5pt;
+  }
+
+  body {
+    background: #fff !important;
+    color: #111 !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .dark {
+    --background: #fff;
+    --foreground: #111;
+    --card: #fff;
+    --card-foreground: #111;
+    --muted: #f4f4f5;
+    --muted-foreground: #52525b;
+    --primary: #1d4ed8;
+    --primary-foreground: #fff;
+    --border: #d4d4d8;
+    --input: #d4d4d8;
+  }
+
+  [data-sonner-toaster],
+  nextjs-portal,
+  #nextjs-dev-overlay {
+    display: none !important;
+  }
+
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  a[href^="http"]::after {
+    content: none;
+  }
+
+  input,
+  button,
+  [role="combobox"],
+  [data-slot="slider"] {
+    box-shadow: none !important;
+  }
+
+  [data-slot="card"] {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border-color: #d4d4d8 !important;
+  }
+
+  #wacc-results {
+    break-inside: avoid;
+  }
+
+  #wacc-results h2 {
+    margin: 0 0 0.4rem;
+  }
+
+  #wacc-results [data-slot="card"] {
+    gap: 0.5rem;
+    border: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  #wacc-results .katex-display {
+    margin: 0.15em 0;
+  }
+
+  .print-letterhead,
+  .print-parameters {
+    break-inside: avoid;
+  }
+
+  .katex-display {
+    break-inside: avoid;
+  }
+}

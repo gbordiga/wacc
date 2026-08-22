@@ -20,15 +20,50 @@ export interface WACCParams extends CostOfEquityParams {
   taxRate: number; // T - Corporate tax rate (%)
 }
 
+/** D/E above this makes Hamada unstable (βD = 0 is a bad assumption). */
+export const HAMADA_UNSTABLE_DE_RATIO = 5
+
+export function debtToEquityRatio(
+  debtRatio: number,
+  equityRatio: number
+): number {
+  const debt = debtRatio / 100
+  const equity = equityRatio / 100
+  if (equity <= 0) return debt > 0 ? Infinity : 0
+  return debt / equity
+}
+
+export function getHamadaWarning({
+  equityRatio,
+  debtRatio,
+  icr,
+}: {
+  equityRatio: number
+  debtRatio: number
+  icr?: number
+}): string | null {
+  if (equityRatio <= 0 && debtRatio > 0)
+    return "At 0% equity Hamada is undefined (D/E is infinite). WACC equals after-tax cost of debt; ke is not in the average. ICR and the debt spread already price default risk on kd."
+
+  const debtToEquity = debtToEquityRatio(debtRatio, equityRatio)
+  const isHighLeverage = debtToEquity > HAMADA_UNSTABLE_DE_RATIO
+  const isDistressedCoverage =
+    icr !== undefined && Number.isFinite(icr) && icr < 2
+
+  if (!isHighLeverage && !isDistressedCoverage) return null
+
+  if (isHighLeverage && isDistressedCoverage)
+    return "Hamada assumes debt is risk-free (βD = 0). At this D/E, βL and ke jump sharply between nearby equity weights. ICR is already weak, so the spread on kd reflects default risk that Hamada does not put into beta. Treat ke as illustrative; a going-concern WACC should use a target capital structure."
+
+  if (isHighLeverage)
+    return "Hamada assumes debt is risk-free (βD = 0). At this D/E, βL and ke change a lot for a 1% move in equity. ICR and the interest spread already adjust kd; they do not cap levered beta. For a going-concern WACC, relever at a target D/E rather than this extreme mix."
+
+  return "ICR is low, so the debt spread is already wide. Hamada still treats debt as risk-free when levering beta, so ke can look too high relative to kd."
+}
+
 /**
  * Calculate Levered Beta from Unlevered Beta
  * Formula: βL = βU × [1 + (1 – T) × (D ÷ E)]
- * Where:
- * - βL: Levered beta
- * - βU: Unlevered beta
- * - T: Tax rate (as decimal)
- * - D: Debt value
- * - E: Equity value
  */
 export function calculateLeveredBeta(
   unleveredBeta: number,
@@ -36,21 +71,34 @@ export function calculateLeveredBeta(
   equityRatio: number,
   taxRate: number
 ): number {
-  // Convert percentage values to decimal
-  const taxRateDecimal = taxRate / 100;
-  const debtRatioDecimal = debtRatio / 100;
-  const equityRatioDecimal = equityRatio / 100;
+  if (equityRatio <= 0) return parseFloat(unleveredBeta.toFixed(2))
 
-  // Calculate debt to equity ratio
-  let debtToEquity = 0;
-  if (equityRatioDecimal > 0) {
-    debtToEquity = debtRatioDecimal / equityRatioDecimal;
-  }
+  const taxRateDecimal = taxRate / 100
+  const debtToEquity = debtToEquityRatio(debtRatio, equityRatio)
+  const leveredBeta =
+    unleveredBeta * (1 + (1 - taxRateDecimal) * debtToEquity)
 
-  // Formula: βL = βU × [1 + (1 – T) × (D ÷ E)]
-  const leveredBeta = unleveredBeta * (1 + (1 - taxRateDecimal) * debtToEquity);
+  return parseFloat(leveredBeta.toFixed(2))
+}
 
-  return parseFloat(leveredBeta.toFixed(2));
+/**
+ * Invert Hamada: βU = βL ÷ [1 + (1 – T) × (D ÷ E)]
+ */
+export function calculateUnleveredBeta(
+  leveredBeta: number,
+  debtRatio: number,
+  equityRatio: number,
+  taxRate: number
+): number {
+  if (debtRatio === 0 || equityRatio <= 0)
+    return parseFloat(leveredBeta.toFixed(2))
+
+  const taxRateDecimal = taxRate / 100
+  const debtToEquity = debtToEquityRatio(debtRatio, equityRatio)
+  const unleveredBeta =
+    leveredBeta / (1 + (1 - taxRateDecimal) * debtToEquity)
+
+  return parseFloat(unleveredBeta.toFixed(2))
 }
 
 /**

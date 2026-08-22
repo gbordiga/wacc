@@ -6,19 +6,23 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { getCompanyTypes } from "@/services/coverage-spread";
-import { FormValues } from "../Calculator";
-import { Calculator } from "lucide-react";
+} from "@/components/ui/select"
+import { getCompanyTypes } from "@/services/coverage-spread"
+import { formatGroupedInteger } from "@/utils/format"
+import { FormValues } from "../Calculator"
+import { Briefcase, CircleDollarSign, Ratio, Receipt } from "lucide-react"
+import { SourceLink } from "@/components/SourceLink"
+import { FieldLabel } from "./FieldLabel"
+import { FieldGrid, fieldCellClassName } from "./FieldGrid"
+import { FormSection } from "./FormSection"
 
 interface ICRSectionProps {
   form: UseFormReturn<FormValues>;
@@ -28,66 +32,55 @@ interface ICRSectionProps {
 
 export function ICRSection({ form, updateICR, icr }: ICRSectionProps) {
   return (
-    <div>
-      <h3 className="text-lg font-medium mb-2">
-        <div className="flex items-center gap-2">
-          <Calculator className="h-5 w-5" />
-          Interest Coverage Ratio (ICR)
+    <FormSection
+      title="Interest Coverage Ratio"
+      description={
+        <>
+          Sets the debt spread.{" "}
+          <SourceLink href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html">
+            Damodaran, 2026
+          </SourceLink>
+        </>
+      }
+      icon={Ratio}
+      action={
+        <div className="inline-flex items-center gap-2 rounded-md bg-muted px-3 py-1.5 text-sm">
+          <span className="text-muted-foreground">Current ICR</span>
+          <span className="font-semibold tabular-nums">
+            {icr === Infinity ? "∞" : icr.toFixed(2)}
+          </span>
         </div>
-      </h3>
-      <p className="text-sm text-gray-500 mb-4">
-        Determines the debt spread premium (
-        <a
-          href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 hover:text-blue-800 underline"
-        >
-          Damodaran, January 2025
-        </a>
-        )
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      }
+    >
+      <FieldGrid columns={3}>
         <FormField
           control={form.control}
           name="ebit"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>EBIT</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                    $
-                  </span>
+            <FormItem className={fieldCellClassName}>
+              <FieldLabel icon={CircleDollarSign}>EBIT</FieldLabel>
+              <div className="relative">
+                <span
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                >
+                  $
+                </span>
+                <FormControl>
                   <Input
                     type="text"
+                    inputMode="numeric"
                     className="pl-6"
-                    value={
-                      field.value
-                        ? field.value.toLocaleString("en-US", {
-                            maximumFractionDigits: 0,
-                            useGrouping: true,
-                          })
-                        : ""
-                    }
+                    value={field.value ? formatGroupedInteger(field.value) : ""}
                     onChange={(e) => {
-                      // Remove all non-numeric characters for processing
-                      const rawValue = e.target.value.replace(/[^0-9]/g, "");
-
-                      // Convert to number or use empty string if backspaced to nothing
-                      const value = rawValue ? parseInt(rawValue, 10) : "";
-
-                      // Update the form
-                      field.onChange(value);
-
-                      // Trigger ICR calculation if we have a value
-                      if (value) {
-                        setTimeout(updateICR, 0);
-                      }
+                      const rawValue = e.target.value.replace(/[^0-9]/g, "")
+                      const value = rawValue ? parseInt(rawValue, 10) : ""
+                      field.onChange(value)
+                      if (value) setTimeout(updateICR, 0)
                     }}
                   />
-                </div>
-              </FormControl>
+                </FormControl>
+              </div>
               <FormDescription>
                 Earnings Before Interest and Taxes
               </FormDescription>
@@ -99,42 +92,30 @@ export function ICRSection({ form, updateICR, icr }: ICRSectionProps) {
           control={form.control}
           name="interestExpense"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Interest Expense</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                    $
-                  </span>
+            <FormItem className={fieldCellClassName}>
+              <FieldLabel icon={Receipt}>Interest Expense</FieldLabel>
+              <div className="relative">
+                <span
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                >
+                  $
+                </span>
+                <FormControl>
                   <Input
                     type="text"
+                    inputMode="numeric"
                     className="pl-6"
-                    value={
-                      field.value
-                        ? field.value.toLocaleString("en-US", {
-                            maximumFractionDigits: 0,
-                            useGrouping: true,
-                          })
-                        : ""
-                    }
+                    value={field.value ? formatGroupedInteger(field.value) : ""}
                     onChange={(e) => {
-                      // Remove all non-numeric characters for processing
-                      const rawValue = e.target.value.replace(/[^0-9]/g, "");
-
-                      // Convert to number or use empty string if backspaced to nothing
-                      const value = rawValue ? parseInt(rawValue, 10) : "";
-
-                      // Update the form
-                      field.onChange(value);
-
-                      // Trigger ICR calculation if we have a value
-                      if (value) {
-                        setTimeout(updateICR, 0);
-                      }
+                      const rawValue = e.target.value.replace(/[^0-9]/g, "")
+                      const value = rawValue ? parseInt(rawValue, 10) : ""
+                      field.onChange(value)
+                      if (value) setTimeout(updateICR, 0)
                     }}
                   />
-                </div>
-              </FormControl>
+                </FormControl>
+              </div>
               <FormDescription>Annual interest payment</FormDescription>
             </FormItem>
           )}
@@ -144,8 +125,8 @@ export function ICRSection({ form, updateICR, icr }: ICRSectionProps) {
           control={form.control}
           name="companyType"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Company Type</FormLabel>
+            <FormItem className={fieldCellClassName}>
+              <FieldLabel icon={Briefcase}>Company Type</FieldLabel>
               <Select
                 onValueChange={(value) => {
                   field.onChange(value);
@@ -154,7 +135,7 @@ export function ICRSection({ form, updateICR, icr }: ICRSectionProps) {
                 defaultValue={field.value}
               >
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select company type" />
                   </SelectTrigger>
                 </FormControl>
@@ -165,6 +146,8 @@ export function ICRSection({ form, updateICR, icr }: ICRSectionProps) {
                         ? "Large Non-Financial"
                         : type === "financial"
                         ? "Financial"
+                        : type === "utility"
+                        ? "Utility / Infrastructure"
                         : "Small Risky Non-Financial"}
                     </SelectItem>
                   ))}
@@ -176,11 +159,7 @@ export function ICRSection({ form, updateICR, icr }: ICRSectionProps) {
             </FormItem>
           )}
         />
-      </div>
-      <div className="mt-2 text-sm">
-        <span className="font-medium">Current ICR:</span>{" "}
-        {icr === Infinity ? "∞" : icr.toFixed(2)}
-      </div>
-    </div>
-  );
+      </FieldGrid>
+    </FormSection>
+  )
 }

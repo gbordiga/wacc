@@ -3,11 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { UseFormReturn } from "react-hook-form";
 import {
+  FormControl,
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+} from "@/components/ui/form"
 import CountrySelector from "../CountrySelector";
 import SectorSelector from "../SectorSelector";
 import TaxSelector from "../TaxSelector";
@@ -18,7 +18,13 @@ import {
   getTaxCountries,
   findClosestTaxCountry,
 } from "@/services/marginal-tax";
-import { Globe } from "lucide-react";
+import { Building2, ChartColumn, Factory, Globe, Landmark, MapPin } from "lucide-react"
+import { SourceLink } from "@/components/SourceLink"
+import { FieldLabel } from "./FieldLabel"
+import { FormSection } from "./FormSection"
+const pairedSectionClassName = "lg:row-span-7 lg:grid lg:grid-rows-subgrid"
+const pairedContentClassName = "grid gap-6 lg:row-span-6 lg:grid-rows-subgrid"
+const pairedFieldClassName = "lg:row-span-3 lg:grid-rows-subgrid"
 
 interface CountrySectorSectionProps {
   form: UseFormReturn<FormValues>;
@@ -31,18 +37,11 @@ export function CountrySectorSection({
   onCountryChange,
   onSectorChange,
 }: CountrySectorSectionProps) {
-  const [taxCountries, setTaxCountries] = useState<string[]>([]);
+  const taxCountries = getTaxCountries()
   const [isManualTaxRate, setIsManualTaxRate] = useState(false);
   const [isManualTaxCountry, setIsManualTaxCountry] = useState(false);
   const currentCountry = form.watch("country");
-
-  // Watch for changes to taxRate to detect manual edits
   const taxRate = form.watch("taxRate");
-
-  // Initialize tax countries
-  useEffect(() => {
-    setTaxCountries(getTaxCountries());
-  }, []);
 
   // Update tax rate when tax country changes
   const handleTaxCountryChange = useCallback(
@@ -137,108 +136,112 @@ export function CountrySectorSection({
   };
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
-        <Globe className="h-5 w-5" />
-        Country and Sector
-      </h3>
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <FormSection
+        title="Geography"
+        description="Tax country follows the selected country unless you override it."
+        icon={Globe}
+        className={pairedSectionClassName}
+        contentClassName={pairedContentClassName}
+      >
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem className={pairedFieldClassName}>
+                <FieldLabel icon={MapPin}>Country</FieldLabel>
+                <FormControl>
+                  <CountrySelector
+                    value={field.value}
+                    onChange={handleMainCountryChange}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Determines risk-free rate and market risk premium (
+                  <SourceLink href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5260463">
+                    Fernandez, 2025
+                  </SourceLink>
+                  )
+                </FormDescription>
+              </FormItem>
+            )}
+          />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-        <FormField
-          control={form.control}
-          name="country"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Country</FormLabel>
-              <CountrySelector
-                value={field.value}
-                onChange={handleMainCountryChange}
-              />
-              <FormDescription>
-                Determines risk-free rate and market risk premium (
-                <a
-                  href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4754347"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 underline"
-                >
-                  Fernandez, 2024
-                </a>
-                )
-              </FormDescription>
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="taxCountry"
+            render={({ field }) => (
+              <FormItem className={pairedFieldClassName}>
+                <FieldLabel icon={Landmark}>Tax Country</FieldLabel>
+                <FormControl>
+                  <TaxSelector
+                    country={field.value || ""}
+                    onChange={handleTaxSelectorChange}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Determines the marginal tax rate for cost of debt calculation
+                  (
+                  <SourceLink href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/countrytaxrates.html">
+                    Damodaran, January 2026
+                  </SourceLink>
+                  )
+                </FormDescription>
+              </FormItem>
+            )}
+          />
+      </FormSection>
 
-        <FormField
-          control={form.control}
-          name="sector"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Industry Sector</FormLabel>
-              <SectorSelector value={field.value} onChange={onSectorChange} />
-              <FormDescription>
-                Determines the unlevered beta for the calculation (
-                <a
-                  href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datacurrent.html#discrate"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 underline"
-                >
-                  Damodaran, January 2025, Global Betas, Effective Tax
-                </a>
-                )
-              </FormDescription>
-            </FormItem>
-          )}
-        />
-      </div>
+      <FormSection
+        title="Industry and size"
+        description="Sector sets the unlevered beta. Size sets the size premium."
+        icon={Building2}
+        className={pairedSectionClassName}
+        contentClassName={pairedContentClassName}
+      >
+          <FormField
+            control={form.control}
+            name="sector"
+            render={({ field }) => (
+              <FormItem className={pairedFieldClassName}>
+                <FieldLabel icon={Factory}>Industry Sector</FieldLabel>
+                <FormControl>
+                  <SectorSelector
+                    value={field.value}
+                    onChange={onSectorChange}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Determines the unlevered beta for the calculation (
+                  <SourceLink href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/BetasGlobal.html">
+                    Damodaran, January 2026, Global Betas
+                  </SourceLink>
+                  )
+                </FormDescription>
+              </FormItem>
+            )}
+          />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField
-          control={form.control}
-          name="taxCountry"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tax Country</FormLabel>
-              <TaxSelector
-                country={field.value || ""}
-                onChange={handleTaxSelectorChange}
-              />
-              <FormDescription>
-                Determines the marginal tax rate for cost of debt calculation (
-                <a
-                  href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/countrytaxrates.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 underline"
-                >
-                  Damodaran, January 2025
-                </a>
-                )
-              </FormDescription>
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="marketCap"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Market Capitalization</FormLabel>
-              <MarketCapSelector
-                marketCap={field.value || 0}
-                onChange={handleMarketCapChange}
-              />
-              <FormDescription>
-                Company size in millions of USD determines the size premium
-                (Duff & Phelps, 2023)
-              </FormDescription>
-            </FormItem>
-          )}
-        />
-      </div>
+          <FormField
+            control={form.control}
+            name="marketCap"
+            render={({ field }) => (
+              <FormItem className={pairedFieldClassName}>
+                <FieldLabel icon={ChartColumn}>Market Capitalization</FieldLabel>
+                <FormControl>
+                  <MarketCapSelector
+                    marketCap={field.value || 0}
+                    onChange={handleMarketCapChange}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Company size in millions of USD determines the size premium
+                  (Kroll, 2025)
+                </FormDescription>
+              </FormItem>
+            )}
+          />
+      </FormSection>
     </div>
-  );
+  )
 }

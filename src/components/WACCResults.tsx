@@ -1,43 +1,76 @@
-"use client";
+"use client"
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { CalculationResult } from "@/types";
-import { formatPercentage } from "@/utils/format";
+import type { ReactNode } from "react"
+import { CalculationResult } from "@/types"
+import { formatPercentage } from "@/utils/format"
+import { KaTeXFormula } from "@/components/KaTeXFormula"
 
-interface WACCResultsProps {
-  result: CalculationResult;
+interface BarSegment {
+  label: string
+  value: number
+  className: string
 }
 
-// Helper function to ensure values are numbers and to safely format them
+function ContributionBar({
+  segments,
+  total,
+}: {
+  segments: BarSegment[]
+  total: number
+}) {
+  const safeTotal = total === 0 ? 1 : total
+
+  return (
+    <div className="space-y-1.5 print:hidden">
+      <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        {segments.map((segment) => {
+          const width = Math.max(0, (segment.value / safeTotal) * 100)
+          if (width < 0.5) return null
+          return (
+            <div
+              key={segment.label}
+              className={segment.className}
+              style={{ width: `${width}%` }}
+            />
+          )
+        })}
+      </div>
+      <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+        {segments.map((segment) => (
+          <li key={segment.label} className="flex items-center gap-1.5">
+            <span
+              className={`size-2 shrink-0 rounded-full ${segment.className}`}
+            />
+            <span>
+              {segment.label} {formatPercentage(segment.value)}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+interface WACCResultsProps {
+  result: CalculationResult
+}
+
 function safeToFixed(
   value: number | string | undefined | null,
   decimals: number = 2
 ): string {
-  if (value === undefined || value === null) return "0.00";
+  if (value === undefined || value === null) return "0.00"
 
-  // If it's already a number, use it
-  if (typeof value === "number" && !isNaN(value)) {
-    return value.toFixed(decimals);
-  }
+  if (typeof value === "number" && !isNaN(value))
+    return value.toFixed(decimals)
 
-  // Try to convert string to number, handling comma as decimal separator
-  const parsedValue = parseFloat(String(value).replace(",", "."));
-  return isNaN(parsedValue) ? "0.00" : parsedValue.toFixed(decimals);
+  const parsedValue = parseFloat(String(value).replace(",", "."))
+  return isNaN(parsedValue) ? "0.00" : parsedValue.toFixed(decimals)
 }
 
 export default function WACCResults({ result }: WACCResultsProps) {
-  const { wacc, costOfEquity, costOfDebt, inputs } = result;
+  const { wacc, costOfEquity, costOfDebt, inputs } = result
 
-  // Format the timestamp
-  const formattedDate = new Date(result.timestamp).toLocaleString();
-
-  // Ensure all values are numbers before calculations
   const safeInputs = {
     equityRatio: parseFloat(safeToFixed(inputs.equityRatio)),
     debtRatio: parseFloat(safeToFixed(inputs.debtRatio)),
@@ -45,321 +78,218 @@ export default function WACCResults({ result }: WACCResultsProps) {
     beta: parseFloat(safeToFixed(inputs.beta)),
     leveredBeta: parseFloat(safeToFixed(inputs.leveredBeta || inputs.beta)),
     marketRiskPremium: parseFloat(safeToFixed(inputs.marketRiskPremium)),
-    countryRiskPremium: parseFloat(safeToFixed(inputs.countryRiskPremium)),
     sizePremium: parseFloat(safeToFixed(inputs.sizePremium, 2)),
     additionalRisk: parseFloat(safeToFixed(inputs.additionalRisk, 2)),
     costOfDebt: parseFloat(safeToFixed(inputs.costOfDebt)),
     debtRiskFreeRate: parseFloat(safeToFixed(inputs.debtRiskFreeRate)),
     spreadRate: parseFloat(safeToFixed(inputs.spreadRate)),
     taxRate: parseFloat(safeToFixed(inputs.taxRate)),
-    country: inputs.country,
-    sector: inputs.sector,
-  };
+  }
 
-  const safeWacc = parseFloat(safeToFixed(wacc));
-  const safeCostOfEquity = parseFloat(safeToFixed(costOfEquity));
-  const safeCostOfDebt = parseFloat(safeToFixed(costOfDebt));
-
-  // Convert percentage values to decimal ratios for calculations
-  const equityRatioDecimal = safeInputs.equityRatio / 100;
-  const debtRatioDecimal = safeInputs.debtRatio / 100;
-
-  // Calculate individual components contribution using decimal ratios
-  const equityContribution = equityRatioDecimal * safeCostOfEquity;
+  const safeWacc = parseFloat(safeToFixed(wacc))
+  const safeCostOfEquity = parseFloat(safeToFixed(costOfEquity))
+  const safeCostOfDebt = parseFloat(safeToFixed(costOfDebt))
+  const equityRatioDecimal = safeInputs.equityRatio / 100
+  const debtRatioDecimal = safeInputs.debtRatio / 100
+  const equityContribution = equityRatioDecimal * safeCostOfEquity
   const debtContribution =
-    debtRatioDecimal * safeCostOfDebt * (1 - safeInputs.taxRate / 100);
-
-  // Calculate Cost of Equity components
-  const rfContribution = safeInputs.riskFreeRate;
-  const betaMarketContribution =
-    safeInputs.leveredBeta * safeInputs.marketRiskPremium;
-  const sizePremiumContribution = safeInputs.sizePremium;
-  const additionalRiskContribution = safeInputs.additionalRisk;
+    debtRatioDecimal * safeCostOfDebt * (1 - safeInputs.taxRate / 100)
+  const afterTaxDebtRate =
+    safeCostOfDebt * (1 - safeInputs.taxRate / 100)
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Results</h2>
+    <div id="wacc-results" className="scroll-mb-24 space-y-3">
+      <h2 className="text-xl font-semibold print:hidden">Results</h2>
+      <h2 className="mb-1 hidden text-base font-semibold print:block">
+        Calculation
+      </h2>
 
-      {/* Main Results Card */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* WACC Result */}
-        <Card className="bg-primary/5 border-primary">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-center">WACC</CardTitle>
-            <CardDescription className="text-center">
-              Weighted Average Cost of Capital
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold text-center text-primary">
-              {formatPercentage(safeWacc / 100, 2)}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Cost of Equity Result */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-center">
-              Cost of Equity (k<sub>e</sub>)
-            </CardTitle>
-            <CardDescription className="text-center">
-              Return required by shareholders
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-center">
-              {formatPercentage(safeCostOfEquity / 100, 2)}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Cost of Debt Result */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-center">
-              Cost of Debt (k<sub>d</sub>)
-            </CardTitle>
-            <CardDescription className="text-center">
-              Expected return by lenders
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-center">
-              {formatPercentage(safeCostOfDebt / 100, 2)}
-            </div>
-            <div className="text-sm text-muted-foreground text-center mt-2">
-              Tax effect:{" "}
-              {formatPercentage(
-                (safeCostOfDebt / 100) * (-safeInputs.taxRate / 100),
-                2
-              )}
-            </div>
-          </CardContent>
-        </Card>
+      <div className="print:hidden grid grid-cols-3 divide-x overflow-hidden rounded-lg border bg-card">
+        <Metric
+          label="WACC"
+          value={formatPercentage(safeWacc / 100, 2)}
+          emphasize
+        />
+        <Metric
+          label={
+            <>
+              k<sub>e</sub>
+            </>
+          }
+          value={formatPercentage(safeCostOfEquity / 100, 2)}
+        />
+        <Metric
+          label={
+            <>
+              k<sub>d</sub>
+            </>
+          }
+          value={formatPercentage(safeCostOfDebt / 100, 2)}
+          note={`after tax ${formatPercentage(afterTaxDebtRate / 100, 2)}`}
+        />
       </div>
 
-      {/* WACC Component Visualization */}
-      <Card>
-        <CardHeader>
-          <CardTitle>WACC Component Breakdown</CardTitle>
-          <CardDescription>
-            Relative contribution of each component
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="w-full bg-muted h-6 rounded-full overflow-hidden flex">
-              <div
-                className="bg-blue-500 h-full flex items-center justify-center text-xs font-medium"
-                style={{ width: `${(equityContribution / safeWacc) * 100}%` }}
-              >
-                {formatPercentage(equityContribution / safeWacc, 0)}
-              </div>
-              <div
-                className="bg-green-500 h-full flex items-center justify-center text-xs font-medium"
-                style={{ width: `${(debtContribution / safeWacc) * 100}%` }}
-              >
-                {formatPercentage(debtContribution / safeWacc, 0)}
-              </div>
-            </div>
+      <div className="space-y-3 rounded-lg border bg-card p-4 print:space-y-2.5 print:border-0 print:bg-transparent print:p-0">
+        <FormulaBlock
+          title="WACC"
+          formula="WACC = (E/V)\,k_e + (D/V)\,k_d(1-T)"
+        >
+          <ContributionBar
+            total={safeWacc}
+            segments={[
+              {
+                label: `Equity ${safeInputs.equityRatio.toFixed(0)}%`,
+                value: equityContribution,
+                className: "bg-chart-1",
+              },
+              {
+                label: `Debt after tax ${safeInputs.debtRatio.toFixed(0)}%`,
+                value: debtContribution,
+                className: "bg-chart-2",
+              },
+            ]}
+          />
+          <p className="font-mono text-[13px] leading-snug">
+            {safeToFixed(safeInputs.equityRatio)}% ×{" "}
+            {safeToFixed(safeCostOfEquity)}% +{" "}
+            {safeToFixed(safeInputs.debtRatio)}% ×{" "}
+            {safeToFixed(safeCostOfDebt)}% × (1 −{" "}
+            {safeToFixed(safeInputs.taxRate)}%) ={" "}
+            {safeToFixed(equityContribution)}% +{" "}
+            {safeToFixed(debtContribution)}% ={" "}
+            <strong>{safeToFixed(safeWacc)}%</strong>
+          </p>
+        </FormulaBlock>
 
-            <div className="flex justify-between text-sm">
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-                <span>
-                  Equity: {formatPercentage(equityContribution / 100, 2)} (
-                  {safeInputs.equityRatio.toFixed(0)}% of capital)
-                </span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                <span>
-                  Debt: {formatPercentage(debtContribution / 100, 2)} (
-                  {safeInputs.debtRatio.toFixed(0)}% of capital)
-                </span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        <FormulaBlock
+          title={
+            <>
+              Cost of equity (k<sub>e</sub>)
+            </>
+          }
+          formula="k_e = r_f + \beta_L \times MRP + SP + AR"
+        >
+          <ContributionBar
+            total={safeCostOfEquity}
+            segments={[
+              {
+                label: "Risk-free",
+                value: safeInputs.riskFreeRate,
+                className: "bg-chart-3",
+              },
+              {
+                label: "βL × MRP",
+                value: safeInputs.leveredBeta * safeInputs.marketRiskPremium,
+                className: "bg-chart-4",
+              },
+              {
+                label: "Size",
+                value: safeInputs.sizePremium,
+                className: "bg-chart-5",
+              },
+              {
+                label: "Additional",
+                value: safeInputs.additionalRisk,
+                className: "bg-chart-2",
+              },
+            ]}
+          />
+          <p className="font-mono text-[13px] leading-snug">
+            β<sub>L</sub> = {safeToFixed(safeInputs.beta)} × [1 + (1 −{" "}
+            {safeToFixed(safeInputs.taxRate)}%) × (
+            {safeInputs.debtRatio.toFixed(0)} ÷{" "}
+            {safeInputs.equityRatio.toFixed(0)})] ={" "}
+            <strong>{safeToFixed(safeInputs.leveredBeta)}</strong>
+            <span className="text-muted-foreground">
+              {" "}
+              · k<sub>e</sub> = {safeToFixed(safeInputs.riskFreeRate)}% +{" "}
+              {safeToFixed(safeInputs.leveredBeta)} ×{" "}
+              {safeToFixed(safeInputs.marketRiskPremium)}% +{" "}
+              {safeToFixed(safeInputs.sizePremium)}% +{" "}
+              {safeToFixed(safeInputs.additionalRisk)}% ={" "}
+            </span>
+            <strong>{safeToFixed(safeCostOfEquity)}%</strong>
+          </p>
+        </FormulaBlock>
 
-      {/* Calculation Breakdown */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Calculation Breakdown</CardTitle>
-          <CardDescription>Details of the WACC calculation</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            {/* WACC Formula */}
-            <div className="space-y-2">
-              <h3 className="font-medium">WACC Formula</h3>
-              <div className="p-3 bg-muted rounded-md">
-                <p className="font-mono text-sm">
-                  WACC = (E/(E+D)) × k<sub>e</sub> + (D/(E+D)) × k<sub>d</sub> ×
-                  (1-T)
-                </p>
-                <p className="font-mono text-sm mt-2">
-                  WACC = {safeToFixed(safeInputs.equityRatio)}% ÷ 100 ×{" "}
-                  {safeToFixed(safeCostOfEquity)}% +{" "}
-                  {safeToFixed(safeInputs.debtRatio)}% ÷ 100 ×{" "}
-                  {safeToFixed(safeCostOfDebt)}% × (1-
-                  {safeToFixed(safeInputs.taxRate)}%)
-                </p>
-                <p className="font-mono text-sm mt-2">
-                  WACC = {safeToFixed(equityRatioDecimal * safeCostOfEquity)}% +{" "}
-                  {safeToFixed(
-                    debtRatioDecimal *
-                      safeCostOfDebt *
-                      (1 - safeInputs.taxRate / 100)
-                  )}
-                  %
-                </p>
-                <p className="font-mono text-sm mt-2 font-bold">
-                  WACC = {safeToFixed(safeWacc)}%
-                </p>
-              </div>
-            </div>
-
-            {/* Cost of Equity Breakdown */}
-            <div className="space-y-2">
-              <h3 className="font-medium">
-                Cost of Equity (k<sub>e</sub>) Breakdown
-              </h3>
-
-              {/* Ke component visualization */}
-              <div className="w-full bg-muted h-6 rounded-full overflow-hidden flex mb-2">
-                <div
-                  className="bg-yellow-400 h-full flex items-center justify-center text-xs font-medium text-black"
-                  style={{
-                    width: `${(rfContribution / safeCostOfEquity) * 100}%`,
-                  }}
-                >
-                  r<sub>f</sub>
-                </div>
-                <div
-                  className="bg-orange-500 h-full flex items-center justify-center text-xs font-medium"
-                  style={{
-                    width: `${
-                      (betaMarketContribution / safeCostOfEquity) * 100
-                    }%`,
-                  }}
-                >
-                  β<sub>L</sub>×MRP
-                </div>
-
-                <div
-                  className="bg-indigo-400 h-full flex items-center justify-center text-xs font-medium"
-                  style={{
-                    width: `${
-                      (sizePremiumContribution / safeCostOfEquity) * 100
-                    }%`,
-                  }}
-                >
-                  SP
-                </div>
-                <div
-                  className="bg-green-500 h-full flex items-center justify-center text-xs font-medium"
-                  style={{
-                    width: `${
-                      (additionalRiskContribution / safeCostOfEquity) * 100
-                    }%`,
-                  }}
-                >
-                  AR
-                </div>
-              </div>
-
-              <div className="p-3 bg-muted rounded-md">
-                <p className="font-mono text-sm">
-                  k<sub>e</sub> = r<sub>f</sub> + β × MRP + SP + AR
-                </p>
-                <p className="font-mono text-sm mt-2">
-                  β<sub>U</sub> (Unlevered) = {safeToFixed(safeInputs.beta)}
-                </p>
-                <p className="font-mono text-sm mt-2">
-                  β<sub>L</sub> (Levered) = β<sub>U</sub> × [1 + (1 - Tax Rate)
-                  × (Debt ÷ Equity)]
-                </p>
-                <p className="font-mono text-sm mt-2">
-                  β<sub>L</sub> = {safeToFixed(safeInputs.beta)} × [1 + (1 -{" "}
-                  {safeToFixed(safeInputs.taxRate)}% ÷ 100) × (
-                  {safeInputs.debtRatio.toFixed(0)}% ÷{" "}
-                  {safeInputs.equityRatio.toFixed(0)}%)]
-                </p>
-                <p className="font-mono text-sm mt-2">
-                  β<sub>L</sub> = {safeToFixed(safeInputs.leveredBeta)}
-                </p>
-                <p className="font-mono text-sm mt-4">
-                  k<sub>e</sub> = {safeToFixed(safeInputs.riskFreeRate)}% +{" "}
-                  {safeToFixed(safeInputs.leveredBeta)} ×{" "}
-                  {safeToFixed(safeInputs.marketRiskPremium)}% +{" "}
-                  {safeToFixed(safeInputs.sizePremium)}% +{" "}
-                  {safeToFixed(safeInputs.additionalRisk)}%
-                </p>
-                <p className="font-mono text-sm mt-2">
-                  k<sub>e</sub> = {safeToFixed(safeInputs.riskFreeRate)}% +{" "}
-                  {safeToFixed(
-                    safeInputs.leveredBeta * safeInputs.marketRiskPremium
-                  )}
-                  % + {safeToFixed(safeInputs.sizePremium)}% +{" "}
-                  {safeToFixed(safeInputs.additionalRisk)}%
-                </p>
-                <p className="font-mono text-sm mt-2 font-bold">
-                  k<sub>e</sub> = {safeToFixed(safeCostOfEquity)}%
-                </p>
-              </div>
-            </div>
-
-            {/* Cost of Debt Breakdown */}
-            <div className="space-y-4">
-              <h3 className="font-medium">
-                Cost of Debt (k<sub>d</sub>) Breakdown
-              </h3>
-
-              {/* Cost of Debt Visualization */}
-              <div className="w-full bg-muted h-6 rounded-full overflow-hidden flex mb-2">
-                <div
-                  className="bg-blue-500 h-full flex items-center justify-center text-xs font-medium"
-                  style={{
-                    width: `${
-                      (safeInputs.debtRiskFreeRate / safeCostOfDebt) * 100
-                    }%`,
-                  }}
-                >
-                  r<sub>f</sub>
-                </div>
-                <div
-                  className="bg-green-500 h-full flex items-center justify-center text-xs font-medium"
-                  style={{
-                    width: `${(safeInputs.spreadRate / safeCostOfDebt) * 100}%`,
-                  }}
-                >
-                  Spread
-                </div>
-              </div>
-
-              <div className="p-3 bg-muted rounded-md">
-                <p className="font-mono text-sm">
-                  k<sub>d</sub> = r<sub>f</sub> + spread
-                </p>
-                <p className="font-mono text-sm mt-2">
-                  k<sub>d</sub> = {safeToFixed(safeInputs.debtRiskFreeRate)}% +{" "}
-                  {safeToFixed(safeInputs.spreadRate)}%
-                </p>
-                <p className="font-mono text-sm mt-2 font-bold">
-                  k<sub>d</sub> = {safeToFixed(safeInputs.costOfDebt)}%
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="text-sm text-muted-foreground text-right">
-        Calculation performed: {formattedDate}
+        <FormulaBlock
+          title={
+            <>
+              Cost of debt (k<sub>d</sub>)
+            </>
+          }
+          formula="k_d = r_f + \mathrm{spread}"
+        >
+          <ContributionBar
+            total={safeCostOfDebt}
+            segments={[
+              {
+                label: "Risk-free",
+                value: safeInputs.debtRiskFreeRate,
+                className: "bg-chart-1",
+              },
+              {
+                label: "Spread",
+                value: safeInputs.spreadRate,
+                className: "bg-chart-2",
+              },
+            ]}
+          />
+          <p className="font-mono text-[13px] leading-snug">
+            {safeToFixed(safeInputs.debtRiskFreeRate)}% +{" "}
+            {safeToFixed(safeInputs.spreadRate)}% ={" "}
+            <strong>{safeToFixed(safeInputs.costOfDebt)}%</strong>
+          </p>
+        </FormulaBlock>
       </div>
     </div>
-  );
+  )
+}
+
+function Metric({
+  label,
+  value,
+  note,
+  emphasize,
+}: {
+  label: ReactNode
+  value: string
+  note?: string
+  emphasize?: boolean
+}) {
+  return (
+    <div className={`px-4 py-3 ${emphasize ? "bg-primary/5" : ""}`}>
+      <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+        {label}
+      </p>
+      <p
+        className={`text-xl font-semibold tabular-nums ${emphasize ? "text-primary" : ""}`}
+      >
+        {value}
+      </p>
+      {note && <p className="text-[11px] text-muted-foreground">{note}</p>}
+    </div>
+  )
+}
+
+function FormulaBlock({
+  title,
+  formula,
+  children,
+}: {
+  title: ReactNode
+  formula: string
+  children: ReactNode
+}) {
+  return (
+    <div className="space-y-1.5">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+        <h3 className="text-sm font-semibold">{title}</h3>
+        <span className="text-sm text-muted-foreground">
+          <KaTeXFormula formula={formula} />
+        </span>
+      </div>
+      {children}
+    </div>
+  )
 }

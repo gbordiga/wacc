@@ -31,6 +31,16 @@ export function formatCurrency(
 }
 
 /**
+ * Group an integer with commas without locale APIs, so server and client match.
+ */
+export function formatGroupedInteger(value: number): string {
+  const abs = Math.abs(Math.trunc(value))
+  const grouped = String(abs).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  if (value < 0) return `-${grouped}`
+  return grouped
+}
+
+/**
  * Format a number with thousand separators
  */
 export function formatNumber(

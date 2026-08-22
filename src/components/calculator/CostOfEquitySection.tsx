@@ -1,413 +1,332 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { UseFormReturn } from "react-hook-form";
+import { useState, useEffect, useRef, type ReactNode } from "react"
+import type { LucideIcon } from "lucide-react"
+import { UseFormReturn } from "react-hook-form"
 import {
   FormControl,
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { FormValues } from "../Calculator";
-import { Percent, Lock, Unlock } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { FormValues } from "../Calculator"
+import {
+  Activity,
+  AlertTriangle,
+  ChartColumn,
+  LineChart,
+  Shield,
+  TrendingUp,
+} from "lucide-react"
+import { SourceLink } from "@/components/SourceLink"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  calculateLeveredBeta,
+  calculateUnleveredBeta,
+} from "@/lib/financial"
+import { FieldLabel } from "./FieldLabel"
+import { FieldGrid, fieldCellClassName } from "./FieldGrid"
+import { FormSection } from "./FormSection"
 
 interface CostOfEquitySectionProps {
   form: UseFormReturn<FormValues>;
 }
 
-// Helper function to properly format numbers
 function formatNumber(value: number): number {
-  return parseFloat(value.toFixed(3));
-}
-
-// Calculate levered beta from unlevered beta
-function calculateLeveredBeta(
-  unleveredBeta: number,
-  debtRatio: number,
-  equityRatio: number,
-  taxRate: number
-): number {
-  if (equityRatio === 0) return unleveredBeta; // Avoid division by zero
-  // Convert from percentage to decimal for tax rate and ratio between debt and equity
-  const taxAdjustedDebtToEquity =
-    (1 - taxRate / 100) * (debtRatio / equityRatio);
-  return formatNumber(unleveredBeta * (1 + taxAdjustedDebtToEquity));
-}
-
-// Calculate unlevered beta from levered beta
-function calculateUnleveredBeta(
-  leveredBeta: number,
-  debtRatio: number,
-  equityRatio: number,
-  taxRate: number
-): number {
-  if (debtRatio === 0) return leveredBeta; // If no debt, levered = unlevered
-  const taxAdjustedDebtToEquity =
-    (1 - taxRate / 100) * (debtRatio / equityRatio);
-  return formatNumber(leveredBeta / (1 + taxAdjustedDebtToEquity));
+  return parseFloat(value.toFixed(3))
 }
 
 export function CostOfEquitySection({ form }: CostOfEquitySectionProps) {
-  const [betaMode, setBetaMode] = useState<"unlevered" | "levered">(
-    "unlevered"
-  );
-  const [unleveredBeta, setUnleveredBeta] = useState<number>(0);
-  const [leveredBeta, setLeveredBeta] = useState<number>(0);
-  const isUpdating = useRef(false);
-  const isInitialized = useRef(false);
+  const [unleveredBeta, setUnleveredBeta] = useState(() =>
+    formatNumber(form.getValues("beta") || 0)
+  )
+  const [leveredBeta, setLeveredBeta] = useState(() => {
+    const values = form.getValues()
+    return calculateLeveredBeta(
+      values.beta || 0,
+      values.debtRatio,
+      values.equityRatio,
+      values.taxRate
+    )
+  })
+  const ignoreNextBetaSync = useRef(false)
 
-  // Track which beta was last manually set
   const [lastManuallySet, setLastManuallySet] = useState<
-    "unlevered" | "levered" | null
-  >(null);
+    "unlevered" | "levered"
+  >("unlevered")
 
-  // Watch for changes in capital structure and tax rate
-  const debtRatio = form.watch("debtRatio");
-  const equityRatio = form.watch("equityRatio");
-  const taxRate = form.watch("taxRate");
-  const beta = form.watch("beta");
+  const debtRatio = form.watch("debtRatio")
+  const equityRatio = form.watch("equityRatio")
+  const taxRate = form.watch("taxRate")
+  const beta = form.watch("beta")
 
-  // Initialize component on first render
+  function writeUnlevered(next: number) {
+    ignoreNextBetaSync.current = true
+    form.setValue("beta", next)
+  }
+
   useEffect(() => {
-    if (isInitialized.current) return;
-    isInitialized.current = true;
+    if (ignoreNextBetaSync.current) {
+      ignoreNextBetaSync.current = false
+      return
+    }
+    if (Math.abs((beta || 0) - unleveredBeta) < 0.0005) return
 
-    // Form's beta is unlevered by convention
-    setUnleveredBeta(beta || 0);
-    setLastManuallySet("unlevered"); // Assume initially that unlevered was set
+    setLastManuallySet("unlevered")
+    setUnleveredBeta(beta || 0)
+    setLeveredBeta(
+      calculateLeveredBeta(beta || 0, debtRatio, equityRatio, taxRate)
+    )
+  }, [beta])
 
-    // Calculate levered beta from unlevered beta
-    if (equityRatio > 0) {
+  useEffect(() => {
+    if (lastManuallySet === "unlevered") {
       setLeveredBeta(
-        calculateLeveredBeta(beta || 0, debtRatio, equityRatio, taxRate)
-      );
+        calculateLeveredBeta(unleveredBeta, debtRatio, equityRatio, taxRate)
+      )
+      return
     }
-  }, [beta, debtRatio, equityRatio, taxRate]);
 
-  // Track beta changes from external sources (like sector selection)
-  useEffect(() => {
-    if (isUpdating.current) return;
-    if (!isInitialized.current) return; // Skip until initialized
+    const nextUnlevered = calculateUnleveredBeta(
+      leveredBeta,
+      debtRatio,
+      equityRatio,
+      taxRate
+    )
+    setUnleveredBeta(nextUnlevered)
+    writeUnlevered(nextUnlevered)
+  }, [debtRatio, equityRatio, taxRate, lastManuallySet])
 
-    // Only respond to external beta changes (form.beta)
-    // We identify external changes as those not triggered by our handlers
-    const currentUnleveredBeta = unleveredBeta;
-    if (beta !== currentUnleveredBeta) {
-      isUpdating.current = true;
-      try {
-        // This is an external change, switch to unlevered tab
-        setBetaMode("unlevered");
-        setLastManuallySet("unlevered");
+  function handleUnleveredBetaChange(value: number) {
+    setLastManuallySet("unlevered")
+    setUnleveredBeta(value)
+    writeUnlevered(value)
+    setLeveredBeta(
+      calculateLeveredBeta(value, debtRatio, equityRatio, taxRate)
+    )
+  }
 
-        // Update unlevered beta from form
-        setUnleveredBeta(beta || 0);
-
-        // Recalculate levered beta
-        if (equityRatio > 0) {
-          setLeveredBeta(
-            calculateLeveredBeta(beta || 0, debtRatio, equityRatio, taxRate)
-          );
-        }
-      } finally {
-        isUpdating.current = false;
-      }
-    }
-  }, [beta, debtRatio, equityRatio, taxRate, unleveredBeta]);
-
-  // Recalculate when capital structure or tax rate changes
-  useEffect(() => {
-    if (isUpdating.current) return;
-    if (equityRatio === 0) return; // Avoid division by zero
-    if (!isInitialized.current) return; // Skip until initialized
-    if (!lastManuallySet) return; // Skip if we don't know which value was last set
-
-    isUpdating.current = true;
-    try {
-      if (lastManuallySet === "unlevered") {
-        // Keep unlevered fixed, recalculate levered
-        const newLeveredBeta = calculateLeveredBeta(
-          unleveredBeta,
-          debtRatio,
-          equityRatio,
-          taxRate
-        );
-        setLeveredBeta(newLeveredBeta);
-      } else {
-        // Keep levered fixed, recalculate unlevered
-        const newUnleveredBeta = calculateUnleveredBeta(
-          leveredBeta,
-          debtRatio,
-          equityRatio,
-          taxRate
-        );
-        setUnleveredBeta(newUnleveredBeta);
-        // Update the form value since it stores unlevered beta
-        form.setValue("beta", newUnleveredBeta);
-      }
-    } finally {
-      isUpdating.current = false;
-    }
-  }, [
-    debtRatio,
-    equityRatio,
-    taxRate,
-    unleveredBeta,
-    leveredBeta,
-    lastManuallySet,
-    form,
-  ]);
-
-  // Handle unlevered beta change
-  const handleUnleveredBetaChange = (value: number) => {
-    if (isUpdating.current) return;
-    isUpdating.current = true;
-
-    try {
-      // Remember that unlevered was last manually set
-      setLastManuallySet("unlevered");
-
-      // Set the unlevered beta directly
-      setUnleveredBeta(value);
-      form.setValue("beta", value);
-
-      // Calculate the corresponding levered beta
-      if (equityRatio > 0) {
-        const newLeveredBeta = calculateLeveredBeta(
-          value,
-          debtRatio,
-          equityRatio,
-          taxRate
-        );
-        setLeveredBeta(newLeveredBeta);
-      }
-    } finally {
-      isUpdating.current = false;
-    }
-  };
-
-  // Handle levered beta change
-  const handleLeveredBetaChange = (value: number) => {
-    if (isUpdating.current) return;
-    isUpdating.current = true;
-
-    try {
-      // Remember that levered was last manually set
-      setLastManuallySet("levered");
-
-      // Set the levered beta directly
-      setLeveredBeta(value);
-
-      // Calculate the corresponding unlevered beta
-      if (equityRatio > 0) {
-        const newUnleveredBeta = calculateUnleveredBeta(
-          value,
-          debtRatio,
-          equityRatio,
-          taxRate
-        );
-        setUnleveredBeta(newUnleveredBeta);
-        // Always use unlevered beta for the form
-        form.setValue("beta", newUnleveredBeta);
-      }
-    } finally {
-      isUpdating.current = false;
-    }
-  };
-
-  // Handle tab change
-  const handleTabChange = (value: "unlevered" | "levered") => {
-    setBetaMode(value);
-  };
+  function handleLeveredBetaChange(value: number) {
+    setLastManuallySet("levered")
+    setLeveredBeta(value)
+    const nextUnlevered = calculateUnleveredBeta(
+      value,
+      debtRatio,
+      equityRatio,
+      taxRate
+    )
+    setUnleveredBeta(nextUnlevered)
+    writeUnlevered(nextUnlevered)
+  }
 
   return (
-    <div>
-      <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
-        <Percent className="h-5 w-5" />
-        Cost of Equity Parameters
-      </h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <FormField
-          control={form.control}
+    <FormSection
+      title="Cost of Equity"
+      description="CAPM inputs. Choose which beta you set; the other is derived from capital structure and tax."
+      icon={TrendingUp}
+    >
+      <FieldGrid className="gap-x-8">
+        <RateField
+          form={form}
           name="riskFreeRate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Risk-Free Rate (%)</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  step="0.001"
-                  min="0"
-                  value={formatNumber(field.value || 0)}
-                  onChange={(e) => {
-                    const value = parseFloat(e.target.value);
-                    if (!isNaN(value)) {
-                      field.onChange(formatNumber(value));
-                    }
-                  }}
-                />
-              </FormControl>
-              <FormDescription>
-                Rate of return on a default-free investment in the same currency
-                and time horizon
-              </FormDescription>
-            </FormItem>
-          )}
+          label="Risk-Free Rate (%)"
+          icon={Shield}
+          step="0.001"
+          description={
+            <>
+              Rate of return on a default-free investment in the same currency
+              and time horizon (
+              <SourceLink href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5260463">
+                Fernandez, 2025
+              </SourceLink>
+              )
+            </>
+          }
+        />
+        <RateField
+          form={form}
+          name="marketRiskPremium"
+          label="Market Risk Premium (%)"
+          icon={LineChart}
+          step="0.01"
+          description={
+            <>
+              Excess return of the market over the risk-free rate (
+              <SourceLink href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5260463">
+                Fernandez, 2025
+              </SourceLink>
+              )
+            </>
+          }
         />
 
-        <div className="space-y-2">
-          <FormLabel>Beta</FormLabel>
-          <Tabs
-            value={betaMode}
-            onValueChange={(v) => handleTabChange(v as "unlevered" | "levered")}
-            className="w-full"
-          >
-            <TabsList className="w-full mb-2">
-              <TabsTrigger value="unlevered" className="flex-1">
-                Unlevered Beta
-              </TabsTrigger>
-              <TabsTrigger value="levered" className="flex-1">
-                Levered Beta
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="unlevered" className="mt-0">
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="number"
-                  step="0.001"
-                  min="0"
-                  value={formatNumber(unleveredBeta)}
-                  onChange={(e) => {
-                    const value = parseFloat(e.target.value);
-                    if (!isNaN(value)) {
-                      handleUnleveredBetaChange(formatNumber(value));
-                    }
-                  }}
-                />
-                <Unlock className="h-4 w-4 text-gray-500" />
+        <div className="md:col-span-2 space-y-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-medium">Beta</p>
+              <p className="text-sm text-muted-foreground">
+                Choose which beta you set. The other is derived from capital
+                structure and tax.
+              </p>
+            </div>
+            <Tabs
+              value={lastManuallySet}
+              onValueChange={(value) =>
+                setLastManuallySet(value as "unlevered" | "levered")
+              }
+            >
+              <TabsList aria-label="Which beta to set">
+                <TabsTrigger value="unlevered">Set unlevered</TabsTrigger>
+                <TabsTrigger value="levered">Set levered</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          <FieldGrid className="gap-x-8">
+            <FormField
+              control={form.control}
+              name="beta"
+              render={() => {
+                const isInput = lastManuallySet === "unlevered"
+                return (
+                  <FormItem className={fieldCellClassName}>
+                    <div className="flex items-center justify-between gap-3">
+                      <FieldLabel icon={Activity}>Unlevered Beta</FieldLabel>
+                      <BetaRole isInput={isInput} />
+                    </div>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.001"
+                        min="0"
+                        readOnly={!isInput}
+                        aria-label="Unlevered beta"
+                        aria-readonly={!isInput}
+                        className={!isInput ? "bg-muted" : undefined}
+                        value={formatNumber(unleveredBeta)}
+                        onChange={(event) => {
+                          if (!isInput) return
+                          const value = parseFloat(event.target.value)
+                          if (!isNaN(value))
+                            handleUnleveredBetaChange(formatNumber(value))
+                        }}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Business risk without financial leverage effect (
+                      <SourceLink href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/BetasGlobal.html">
+                        Damodaran, January 2026
+                      </SourceLink>
+                      )
+                    </FormDescription>
+                  </FormItem>
+                )
+              }}
+            />
+
+            <div className={`grid gap-2 ${fieldCellClassName}`}>
+              <div className="flex items-center justify-between gap-3">
+                <Label htmlFor="levered-beta" className="flex items-center gap-1.5">
+                  <Activity className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                  Levered Beta
+                </Label>
+                <BetaRole isInput={lastManuallySet === "levered"} />
               </div>
-              <div className="mt-2 flex items-center space-x-2 text-sm text-gray-500">
-                <Lock className="h-3 w-3" />
-                <span>Levered: {formatNumber(leveredBeta)}</span>
-              </div>
-              <div className="mt-2 text-xs text-gray-500 italic">
-                βL = βU × [1 + (1 - Tax Rate) × (Debt ÷ Equity)]
-              </div>
-            </TabsContent>
-            <TabsContent value="levered" className="mt-0">
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="number"
-                  step="0.001"
-                  min="0"
-                  value={formatNumber(leveredBeta)}
-                  onChange={(e) => {
-                    const value = parseFloat(e.target.value);
-                    if (!isNaN(value)) {
-                      handleLeveredBetaChange(formatNumber(value));
-                    }
-                  }}
-                />
-                <Unlock className="h-4 w-4 text-gray-500" />
-              </div>
-              <div className="mt-2 flex items-center space-x-2 text-sm text-gray-500">
-                <Lock className="h-3 w-3" />
-                <span>Unlevered: {formatNumber(unleveredBeta)}</span>
-              </div>
-              <div className="mt-2 text-xs text-gray-500 italic">
-                βU = βL ÷ [1 + (1 - Tax Rate) × (Debt ÷ Equity)]
-              </div>
-            </TabsContent>
-          </Tabs>
-          <FormDescription>
-            {betaMode === "unlevered"
-              ? "Business risk without financial leverage effect"
-              : "Sensitivity including financial leverage effect"}
-          </FormDescription>
+              <Input
+                id="levered-beta"
+                type="number"
+                step="0.001"
+                min="0"
+                readOnly={lastManuallySet !== "levered"}
+                aria-readonly={lastManuallySet !== "levered"}
+                className={
+                  lastManuallySet !== "levered" ? "bg-muted" : undefined
+                }
+                value={formatNumber(leveredBeta)}
+                onChange={(event) => {
+                  if (lastManuallySet !== "levered") return
+                  const value = parseFloat(event.target.value)
+                  if (!isNaN(value))
+                    handleLeveredBetaChange(formatNumber(value))
+                }}
+              />
+              <p className="text-muted-foreground text-sm">
+                Sensitivity including financial leverage effect. βL = βU × [1 +
+                (1 − Tax Rate) × (Debt ÷ Equity)] (Hamada, 1972)
+              </p>
+            </div>
+          </FieldGrid>
         </div>
 
-        <FormField
-          control={form.control}
-          name="marketRiskPremium"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Market Risk Premium (%)</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formatNumber(field.value || 0)}
-                  onChange={(e) => {
-                    const value = parseFloat(e.target.value);
-                    if (!isNaN(value)) {
-                      field.onChange(formatNumber(value));
-                    }
-                  }}
-                />
-              </FormControl>
-              <FormDescription>
-                Excess return of the market over the risk-free rate
-              </FormDescription>
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
+        <RateField
+          form={form}
           name="sizePremium"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Size Risk Premium (%)</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formatNumber(field.value || 0)}
-                  onChange={(e) => {
-                    const value = parseFloat(e.target.value);
-                    if (!isNaN(value)) {
-                      field.onChange(formatNumber(value));
-                    }
-                  }}
-                />
-              </FormControl>
-              <FormDescription>
-                Additional premium based on company size
-              </FormDescription>
-            </FormItem>
-          )}
+          label="Size Risk Premium (%)"
+          icon={ChartColumn}
+          step="0.01"
+          description="Additional premium based on company size (Kroll, 2025)"
         />
-
-        <FormField
-          control={form.control}
+        <RateField
+          form={form}
           name="additionalRisk"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Additional Risk (%)</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formatNumber(field.value || 0)}
-                  onChange={(e) => {
-                    const value = parseFloat(e.target.value);
-                    if (!isNaN(value)) {
-                      field.onChange(formatNumber(value));
-                    }
-                  }}
-                />
-              </FormControl>
-              <FormDescription>
-                Company-specific or other additional risk factors
-              </FormDescription>
-            </FormItem>
-          )}
+          label="Additional Risk (%)"
+          icon={AlertTriangle}
+          step="0.01"
+          description="Company-specific or other additional risk factors"
         />
-      </div>
-    </div>
-  );
+      </FieldGrid>
+    </FormSection>
+  )
+}
+
+interface RateFieldProps {
+  form: UseFormReturn<FormValues>
+  name: "riskFreeRate" | "marketRiskPremium" | "sizePremium" | "additionalRisk"
+  label: string
+  icon?: LucideIcon
+  step: string
+  description: ReactNode
+}
+
+function BetaRole({ isInput }: { isInput: boolean }) {
+  return (
+    <span
+      className={
+        isInput
+          ? "text-xs font-medium text-primary"
+          : "text-xs text-muted-foreground"
+      }
+    >
+      {isInput ? "Input" : "Calculated"}
+    </span>
+  )
+}
+
+function RateField({ form, name, label, icon, step, description }: RateFieldProps) {
+  return (
+    <FormField
+      control={form.control}
+      name={name}
+      render={({ field }) => (
+        <FormItem className={fieldCellClassName}>
+          <FieldLabel icon={icon}>{label}</FieldLabel>
+          <FormControl>
+            <Input
+              type="number"
+              step={step}
+              min="0"
+              value={formatNumber(field.value || 0)}
+              onChange={(event) => {
+                const value = parseFloat(event.target.value)
+                if (!isNaN(value)) field.onChange(formatNumber(value))
+              }}
+            />
+          </FormControl>
+          <FormDescription>{description}</FormDescription>
+        </FormItem>
+      )}
+    />
+  )
 }

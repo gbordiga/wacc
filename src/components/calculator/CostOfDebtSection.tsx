@@ -2,15 +2,18 @@
 
 import { UseFormReturn, useWatch } from "react-hook-form";
 import {
+  FormControl,
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import { FormValues } from "../Calculator";
-import { Input } from "../ui/input";
-import { useEffect } from "react";
-import { Percent } from "lucide-react";
+} from "@/components/ui/form"
+import { FormValues } from "../Calculator"
+import { Input } from "../ui/input"
+import { useEffect } from "react"
+import { HandCoins, Landmark, Plus, Shield } from "lucide-react"
+import { FieldLabel } from "./FieldLabel"
+import { FieldGrid, fieldCellClassName } from "./FieldGrid"
+import { FormSection } from "./FormSection"
 
 interface CostOfDebtSectionProps {
   form: UseFormReturn<FormValues>;
@@ -84,18 +87,19 @@ export function CostOfDebtSection({ form, updateICR }: CostOfDebtSectionProps) {
   }, [ebit, interestExpense, companyType, updateICR, form]);
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
-        <Percent className="h-5 w-5" />
-        Cost of Debt Parameters
-      </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+    <FormSection
+      title="Cost of Debt"
+      description="Pre-tax cost of debt and the tax shield on interest."
+      icon={HandCoins}
+    >
+      <FieldGrid>
         <FormField
           control={form.control}
           name="debtRiskFreeRate"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Risk-Free Rate for Debt (%)</FormLabel>
+            <FormItem className={fieldCellClassName}>
+              <FieldLabel icon={Shield}>Risk-Free Rate for Debt (%)</FieldLabel>
+              <FormControl>
               <Input
                 type="number"
                 step="0.01"
@@ -104,23 +108,20 @@ export function CostOfDebtSection({ form, updateICR }: CostOfDebtSectionProps) {
                 onChange={(e) => {
                   const value = parseFloat(e.target.value);
                   if (!isNaN(value)) {
-                    // Round to 2 decimal places
                     const roundedValue = formatNumber(value);
                     field.onChange(roundedValue);
-
-                    // Update cost of debt when risk-free rate changes
                     const spreadRate = form.getValues("spreadRate");
-                    const newCostOfDebt = formatNumber(
-                      roundedValue + spreadRate
+                    form.setValue(
+                      "costOfDebt",
+                      formatNumber(roundedValue + spreadRate)
                     );
-                    form.setValue("costOfDebt", newCostOfDebt);
                   }
                 }}
-                id={field.name}
-                placeholder="Enter risk-free rate for debt"
               />
+              </FormControl>
               <FormDescription>
-                Country-specific base rate for debt calculations
+                Country-specific base rate for debt calculations (Fernandez,
+                2025)
               </FormDescription>
             </FormItem>
           )}
@@ -130,8 +131,9 @@ export function CostOfDebtSection({ form, updateICR }: CostOfDebtSectionProps) {
           control={form.control}
           name="spreadRate"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Debt Spread (%)</FormLabel>
+            <FormItem className={fieldCellClassName}>
+              <FieldLabel icon={Plus}>Debt Spread (%)</FieldLabel>
+              <FormControl>
               <Input
                 type="number"
                 step="0.01"
@@ -140,36 +142,31 @@ export function CostOfDebtSection({ form, updateICR }: CostOfDebtSectionProps) {
                 onChange={(e) => {
                   const value = parseFloat(e.target.value);
                   if (!isNaN(value)) {
-                    // Round to 2 decimal places
                     const roundedValue = formatNumber(value);
                     field.onChange(roundedValue);
-
-                    // Update cost of debt when spread changes
                     const debtRiskFreeRate = form.getValues("debtRiskFreeRate");
-                    const newCostOfDebt = formatNumber(
-                      debtRiskFreeRate + roundedValue
+                    form.setValue(
+                      "costOfDebt",
+                      formatNumber(debtRiskFreeRate + roundedValue)
                     );
-                    form.setValue("costOfDebt", newCostOfDebt);
                   }
                 }}
-                id={field.name}
-                placeholder="Enter debt spread percentage"
               />
+              </FormControl>
               <FormDescription>
-                Additional yield over the risk-free rate (debt premium)
+                Additional yield over the risk-free rate (Damodaran, January
+                2026)
               </FormDescription>
             </FormItem>
           )}
         />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           control={form.control}
           name="taxRate"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Marginal Tax Rate (%)</FormLabel>
+            <FormItem className={fieldCellClassName}>
+              <FieldLabel icon={Landmark}>Marginal Tax Rate (%)</FieldLabel>
+              <FormControl>
               <Input
                 type="number"
                 step="0.01"
@@ -179,21 +176,18 @@ export function CostOfDebtSection({ form, updateICR }: CostOfDebtSectionProps) {
                 onChange={(e) => {
                   const value = parseFloat(e.target.value);
                   if (!isNaN(value)) {
-                    // Round to 2 decimal places
-                    const roundedValue = formatNumber(value);
-                    field.onChange(roundedValue);
+                    field.onChange(formatNumber(value));
                   }
                 }}
-                id={field.name}
-                placeholder="Enter tax rate percentage"
               />
+              </FormControl>
               <FormDescription>
-                Marginal tax rate for the jurisdiction
+                Marginal tax rate for the jurisdiction (Damodaran, January 2026)
               </FormDescription>
             </FormItem>
           )}
         />
-      </div>
-    </div>
-  );
+      </FieldGrid>
+    </FormSection>
+  )
 }

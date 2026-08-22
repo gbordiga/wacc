@@ -1,74 +1,63 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react"
 import {
+  findClosestTaxCountry,
   getTaxCountries,
   getTaxRate,
-  findClosestTaxCountry,
-} from "@/services/marginal-tax";
+} from "@/services/marginal-tax"
+import { SearchableSelect } from "@/components/ui/searchable-select"
 
 interface TaxSelectorProps {
-  country: string;
-  onChange: (taxRate: number, country?: string) => void;
+  country: string
+  onChange: (taxRate: number, country?: string) => void
 }
 
-export default function TaxSelector({ country, onChange }: TaxSelectorProps) {
-  const [selectedTaxCountry, setSelectedTaxCountry] = useState<string>("");
+function resolveTaxCountry(country: string): string {
+  if (!country) return ""
+  if (getTaxRate(country) !== undefined) return country
+  return findClosestTaxCountry(country) ?? ""
+}
 
-  // Try to find a matching tax country when main country changes
+const TaxSelector = forwardRef<HTMLDivElement, TaxSelectorProps>(
+  function TaxSelector({ country, onChange }, ref) {
+  const [selectedTaxCountry, setSelectedTaxCountry] = useState(() =>
+    resolveTaxCountry(country)
+  )
+
   useEffect(() => {
-    if (country) {
-      // First try exact match
-      const directMatch = getTaxRate(country);
-      if (directMatch !== undefined) {
-        setSelectedTaxCountry(country);
-        onChange(directMatch);
-        return;
-      }
+    const nextCountry = resolveTaxCountry(country)
+    if (!nextCountry || nextCountry === selectedTaxCountry) return
 
-      // If no exact match, try to find closest match
-      const closestCountry = findClosestTaxCountry(country);
-      if (closestCountry) {
-        const taxRate = getTaxRate(closestCountry);
-        if (taxRate !== undefined) {
-          setSelectedTaxCountry(closestCountry);
-          onChange(taxRate, closestCountry);
-        }
-      }
-    }
-  }, [country, onChange]);
+    setSelectedTaxCountry(nextCountry)
+    const taxRate = getTaxRate(nextCountry)
+    if (taxRate === undefined) return
+    onChange(taxRate, nextCountry)
+  }, [country, onChange, selectedTaxCountry])
 
-  const taxCountries = getTaxCountries();
-
-  const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newTaxCountry = event.target.value;
-    setSelectedTaxCountry(newTaxCountry);
-
-    const taxRate = getTaxRate(newTaxCountry);
-    if (taxRate !== undefined) {
-      onChange(taxRate, newTaxCountry);
-    }
-  };
+  function handleCountryChange(newTaxCountry: string) {
+    setSelectedTaxCountry(newTaxCountry)
+    const taxRate = getTaxRate(newTaxCountry)
+    if (taxRate === undefined) return
+    onChange(taxRate, newTaxCountry)
+  }
 
   return (
-    <div className="w-full space-y-2">
-      <select
-        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        value={selectedTaxCountry || ""}
-        onChange={handleCountryChange}
-      >
-        <option value="" disabled>
-          Select tax country
-        </option>
-        {taxCountries.map((taxCountry) => {
-          const rate = getTaxRate(taxCountry);
-          return (
-            <option key={taxCountry} value={taxCountry}>
-              {taxCountry} ({(rate ? rate * 100 : 0).toFixed(1)}%)
-            </option>
-          );
-        })}
-      </select>
-    </div>
-  );
-}
+    <SearchableSelect
+      ref={ref}
+      value={selectedTaxCountry}
+      onChange={handleCountryChange}
+      placeholder="Select tax country"
+      options={getTaxCountries().map((taxCountry) => {
+        const rate = getTaxRate(taxCountry)
+        return {
+          value: taxCountry,
+          label: `${taxCountry} (${((rate ?? 0) * 100).toFixed(1)}%)`,
+        }
+      })}
+    />
+    )
+  }
+)
+
+export default TaxSelector
