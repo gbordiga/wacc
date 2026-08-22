@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -44,25 +45,7 @@ export default function RootLayout({
         <div className="flex flex-col min-h-screen">
           <Navbar />
           <main className="flex-1">{children}</main>
-          <footer className="py-6 text-center border-t">
-            <div className="container mx-auto">
-              <p className="text-sm text-muted-foreground">
-                <a
-                  href="https://wacc.less.style"
-                  className="hover:text-primary transition-colors"
-                >
-                  wacc.less.style
-                </a>{" "}
-                © {new Date().getFullYear()} • Created by{" "}
-                <a
-                  href="https://github.com/gbordiga/wacc"
-                  className="font-medium hover:text-primary transition-colors"
-                >
-                  Giacomo Bordiga
-                </a>
-              </p>
-            </div>
-          </footer>
+          <Footer />
           <Toaster />
         </div>
       </body>
