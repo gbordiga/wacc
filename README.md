@@ -4,7 +4,7 @@ A modern web application for calculating the Weighted Average Cost of Capital (W
 
 ## Features
 
-- **Industry Data Integration**: Uses Damodaran, Fernandez and Duff and Phelps data for accurate financial calculations
+- **Industry Data Integration**: Uses Damodaran, Fernandez and Kroll data for accurate financial calculations
 - **Comprehensive Parameters**: Includes all critical WACC components:
   - Cost of Equity (CAPM model with size premium)
   - Cost of Debt (based on risk-free rate and spreads)
@@ -46,11 +46,11 @@ Visit `http://localhost:3000` to use the calculator.
 
 ## Data sources
 
-- **Risk-Free Rate and Market Risk Premium**: Fernandez, [Survey: Market Risk Premium and Risk-Free Rate](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4754347)
-- **Beta by Industry**: Damodaran, [Betas by Sector, Global](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datacurrent.html#discrate)
-- **Corporate Marginal Tax Rates**: Damodaran, [Corporate Marginal Tax Rates - By country](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/countrytaxrates.html)
-- **Size Risk Premium**: Duff & Phelps
-- Debt Default Spread: Damodaran [Ratings, Interest Coverage Ratios and Default Spread](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html)
+- **Risk-Free Rate and Market Risk Premium**: Fernandez, [Survey: Market Risk Premium and Risk-Free Rate used for 54 countries in 2025](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5260463) (2024 survey used for countries not reported in 2025)
+- **Beta by Industry**: Damodaran, January 2026, [Betas by Sector, Global](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/BetasGlobal.html)
+- **Corporate Marginal Tax Rates**: Damodaran, January 2026, [Corporate Marginal Tax Rates - By country](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/countrytaxrates.html)
+- **Size Risk Premium**: Kroll, 2025
+- **Debt Default Spread**: Damodaran, January 2026, [Ratings, Interest Coverage Ratios and Default Spread](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html)
 
 ## License
 

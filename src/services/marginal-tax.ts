@@ -1,4 +1,6 @@
+// Damodaran, January 2026 — Corporate marginal tax rates by country
 // https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/countrytaxrates.html
+// Source file: https://www.stern.nyu.edu/~adamodar/pc/datasets/countrytaxrates.xls
 
 export const MARGINAL_TAX_BY_COUNTRY = {
   Afghanistan: 0.2,
@@ -8,44 +10,43 @@ export const MARGINAL_TAX_BY_COUNTRY = {
   "American Samoa": 0.34,
   Andorra: 0.1,
   Angola: 0.25,
-  Anguilla: 0.0,
+  Anguilla: 0,
   "Antigua and Barbuda": 0.25,
   Argentina: 0.35,
   Armenia: 0.18,
   Aruba: 0.22,
   Australia: 0.3,
-  Austria: 0.24,
+  Austria: 0.23,
   Azerbaijan: 0.2,
-  Bahamas: 0.0,
-  Bahrain: 0.0,
+  Bahamas: 0,
+  Bahrain: 0,
   Bangladesh: 0.275,
-  Barbados: 0.055,
-  Belarus: 0.2,
+  Barbados: 0.09,
+  Belarus: 0.25,
   Belgium: 0.25,
-  Belize: 0.0,
+  Belize: 0,
   Benin: 0.3,
-  Bermuda: 0.0,
+  Bermuda: 0,
   Bhutan: 0.25,
-  "Bolivia (Plurinational State of)": 0.25,
   "Bonaire, Sint Eustatius and Saba": 0.258,
   "Bosnia and Herzegovina": 0.1,
   Botswana: 0.22,
   Brazil: 0.34,
-  "British Virgin Islands": 0.0,
+  "British Virgin Islands": 0,
   "Brunei Darussalam": 0.185,
   Bulgaria: 0.1,
   "Burkina Faso": 0.275,
   Burundi: 0.3,
-  "Cabo Verde": 0.224,
+  "Cabo Verde": 0.214,
   Cambodia: 0.2,
   Cameroon: 0.33,
-  Canada: 0.262,
-  "Cayman Islands": 0.0,
+  Canada: 0.2614,
+  "Cayman Islands": 0,
   "Central African Republic": 0.3,
   Chad: 0.35,
   Chile: 0.27,
   China: 0.25,
-  "China, Hong Kong Special Administrative Re": 0.165,
+  "China, Hong Kong Special Administrative Region": 0.165,
   "China, Macao Special Administrative Region": 0.12,
   Colombia: 0.35,
   Comoros: 0.5,
@@ -57,7 +58,7 @@ export const MARGINAL_TAX_BY_COUNTRY = {
   Cuba: 0.35,
   Curacao: 0.22,
   Cyprus: 0.125,
-  Czechia: 0.19,
+  Czechia: 0.21,
   "Democratic Republic of the Congo": 0.3,
   Denmark: 0.22,
   Djibouti: 0.25,
@@ -72,45 +73,46 @@ export const MARGINAL_TAX_BY_COUNTRY = {
   Ethiopia: 0.3,
   "Falkland Islands (Malvinas)": 0.26,
   "Faroe Islands": 0.18,
-  Fiji: 0.2,
+  "Federated States of Micronesia": 0.3,
+  Fiji: 0.25,
   Finland: 0.2,
-  France: 0.258,
+  France: 0.2583,
   "French Polynesia": 0.25,
   Gabon: 0.3,
   Gambia: 0.27,
   Georgia: 0.15,
-  Germany: 0.299,
+  Germany: 0.2993,
   Ghana: 0.25,
-  Gibraltar: 0.125,
+  Gibraltar: 0.15,
   Greece: 0.22,
   Greenland: 0.265,
   Grenada: 0.28,
   Guam: 0.21,
   Guatemala: 0.25,
-  Guernsey: 0.0,
+  Guernsey: 0,
   Guinea: 0.25,
   "Guinea-Bissau": 0.25,
   Guyana: 0.25,
   Haiti: 0.3,
   Honduras: 0.3,
   Hungary: 0.09,
-  Iceland: 0.2,
+  Iceland: 0.21,
   India: 0.3,
   Indonesia: 0.22,
-  "Iran (Islamic Republic of)": 0.25,
   Iraq: 0.15,
   Ireland: 0.125,
-  "Isle of Man": 0.0,
+  "Islamic Republic of Iran": 0.25,
+  "Isle of Man": 0,
   Israel: 0.23,
-  Italy: 0.278,
+  Italy: 0.2781,
   Jamaica: 0.25,
-  Japan: 0.297,
-  Jersey: 0.0,
+  Japan: 0.2974,
+  Jersey: 0,
   Jordan: 0.2,
   Kazakhstan: 0.2,
   Kenya: 0.3,
   Kiribati: 0.3,
-  "Kosovo, Republic of": 0.1,
+  Kosovo: 0.1,
   Kuwait: 0.15,
   Kyrgyzstan: 0.1,
   "Lao People's Democratic Republic": 0.2,
@@ -121,7 +123,7 @@ export const MARGINAL_TAX_BY_COUNTRY = {
   Libya: 0.2,
   Liechtenstein: 0.125,
   Lithuania: 0.15,
-  Luxembourg: 0.249,
+  Luxembourg: 0.2494,
   Madagascar: 0.2,
   Malawi: 0.3,
   Malaysia: 0.24,
@@ -131,12 +133,11 @@ export const MARGINAL_TAX_BY_COUNTRY = {
   Mauritania: 0.25,
   Mauritius: 0.15,
   Mexico: 0.3,
-  "Micronesia (Federated States of)": 0.3,
   Monaco: 0.25,
   Mongolia: 0.25,
   Montenegro: 0.15,
   Montserrat: 0.3,
-  Morocco: 0.32,
+  Morocco: 0.33,
   Mozambique: 0.32,
   Myanmar: 0.22,
   Namibia: 0.32,
@@ -158,16 +159,17 @@ export const MARGINAL_TAX_BY_COUNTRY = {
   Paraguay: 0.1,
   Peru: 0.295,
   Philippines: 0.25,
+  "Plurinational State of Bolivia": 0.25,
   Poland: 0.19,
   Portugal: 0.315,
   "Puerto Rico": 0.375,
   Qatar: 0.1,
-  "Republic of Korea": 0.265,
+  "Republic of Korea": 0.264,
   "Republic of Moldova": 0.12,
   Romania: 0.16,
   "Russian Federation": 0.2,
-  Rwanda: 0.3,
-  "Saint Barthelemy": 0.0,
+  Rwanda: 0.28,
+  "Saint Barthelemy": 0,
   "Saint Helena": 0.25,
   "Saint Kitts and Nevis": 0.33,
   "Saint Lucia": 0.3,
@@ -184,7 +186,7 @@ export const MARGINAL_TAX_BY_COUNTRY = {
   Singapore: 0.17,
   "Sint Maarten (Dutch part)": 0.345,
   Slovakia: 0.21,
-  Slovenia: 0.19,
+  Slovenia: 0.22,
   "Solomon Islands": 0.3,
   "South Africa": 0.27,
   "South Sudan": 0.3,
@@ -193,42 +195,42 @@ export const MARGINAL_TAX_BY_COUNTRY = {
   "State of Palestine": 0.15,
   Sudan: 0.35,
   Suriname: 0.36,
-  Swaziland: 0.275,
+  Swaziland: 0.25,
   Sweden: 0.206,
-  Switzerland: 0.197,
-  "Syrian Arab Republic": 0.28,
+  Switzerland: 0.1961,
+  "Syrian Arab Republic": 0.25,
   Taiwan: 0.2,
   Tajikistan: 0.18,
   Thailand: 0.2,
   "The former Yugoslav Republic of Macedonia": 0.1,
   "Timor-Leste": 0.1,
   Togo: 0.27,
-  Tokelau: 0.0,
+  Tokelau: 0,
   Tonga: 0.25,
   "Trinidad and Tobago": 0.3,
   Tunisia: 0.15,
   Turkey: 0.25,
   Turkmenistan: 0.08,
-  "Turks and Caicos Islands": 0.0,
+  "Turks and Caicos Islands": 0,
   Uganda: 0.3,
   Ukraine: 0.18,
   "United Arab Emirates": 0.09,
-  "United Kingdom of Great Britain and Northe": 0.25,
+  "United Kingdom of Great Britain and Northern Ireland": 0.25,
   "United Republic of Tanzania": 0.3,
-  "United States of America": 0.258,
   "United States Virgin Islands": 0.231,
+  "United States of America": 0.2563,
   Uruguay: 0.25,
-  Uzbekistan: 0.15,
-  Vanuatu: 0.0,
+  Uzbekistan: 0.12,
+  Vanuatu: 0,
   "Venezuela (Bolivarian Republic of)": 0.34,
   "Viet Nam": 0.2,
-  "Wallis and Futuna Islands": 0.0,
+  "Wallis and Futuna Islands": 0,
   Yemen: 0.2,
-  Zambia: 0.3,
-  Zimbabwe: 0.247,
-} as const;
+  Zambia: 0.35,
+  Zimbabwe: 0.2575,
+} as const
 
-export type TaxCountry = keyof typeof MARGINAL_TAX_BY_COUNTRY;
+export type TaxCountry = keyof typeof MARGINAL_TAX_BY_COUNTRY
 
 /**
  * Gets the corporate tax rate for a specific country
@@ -236,7 +238,7 @@ export type TaxCountry = keyof typeof MARGINAL_TAX_BY_COUNTRY;
  * @returns The corporate tax rate as a decimal (e.g., 0.25 for 25%)
  */
 export function getTaxRate(country: string): number | undefined {
-  return (MARGINAL_TAX_BY_COUNTRY as Record<string, number>)[country];
+  return (MARGINAL_TAX_BY_COUNTRY as Record<string, number>)[country]
 }
 
 /**
@@ -244,7 +246,7 @@ export function getTaxRate(country: string): number | undefined {
  * @returns Array of country names
  */
 export function getTaxCountries(): string[] {
-  return Object.keys(MARGINAL_TAX_BY_COUNTRY).sort();
+  return Object.keys(MARGINAL_TAX_BY_COUNTRY).sort()
 }
 
 /**
@@ -253,9 +255,9 @@ export function getTaxCountries(): string[] {
  * @returns The tax rate as a percentage string (e.g., "25.0%")
  */
 export function getFormattedTaxRate(country: string): string {
-  const rate = getTaxRate(country);
-  if (rate === undefined) return "N/A";
-  return `${(rate * 100).toFixed(1)}%`;
+  const rate = getTaxRate(country)
+  if (rate === undefined) return "N/A"
+  return `${(rate * 100).toFixed(1)}%`
 }
 
 /**
@@ -264,25 +266,30 @@ export function getFormattedTaxRate(country: string): string {
  * @returns The closest matching tax country name or null if no match found
  */
 export function findClosestTaxCountry(query: string): string | null {
-  // Common country name mappings
   const countryMappings: Record<string, string> = {
     USA: "United States of America",
     US: "United States of America",
     "United States": "United States of America",
-    UK: "United Kingdom of Great Britain and Northe",
-    "Great Britain": "United Kingdom of Great Britain and Northe",
-    England: "United Kingdom of Great Britain and Northe",
+    UK: "United Kingdom of Great Britain and Northern Ireland",
+    "Great Britain": "United Kingdom of Great Britain and Northern Ireland",
+    England: "United Kingdom of Great Britain and Northern Ireland",
+    "United Kingdom of Great Britain and Northe":
+      "United Kingdom of Great Britain and Northern Ireland",
     UAE: "United Arab Emirates",
     "South Korea": "Republic of Korea",
-    "Hong Kong": "China, Hong Kong Special Administrative Re",
+    "Hong Kong": "China, Hong Kong Special Administrative Region",
+    "China, Hong Kong Special Administrative Re":
+      "China, Hong Kong Special Administrative Region",
     Macau: "China, Macao Special Administrative Region",
     Russia: "Russian Federation",
     Vietnam: "Viet Nam",
     Macedonia: "The former Yugoslav Republic of Macedonia",
     Tanzania: "United Republic of Tanzania",
     Venezuela: "Venezuela (Bolivarian Republic of)",
-    Bolivia: "Bolivia (Plurinational State of)",
-    Iran: "Iran (Islamic Republic of)",
+    Bolivia: "Plurinational State of Bolivia",
+    "Bolivia (Plurinational State of)": "Plurinational State of Bolivia",
+    Iran: "Islamic Republic of Iran",
+    "Iran (Islamic Republic of)": "Islamic Republic of Iran",
     Syria: "Syrian Arab Republic",
     Taiwan: "Taiwan",
     Palestine: "State of Palestine",
@@ -296,31 +303,30 @@ export function findClosestTaxCountry(query: string): string | null {
     "Czech Republic": "Czechia",
     "Saudi Arabia": "Saudi Arabia",
     Bosnia: "Bosnia and Herzegovina",
-  };
-
-  // Direct mapping match
-  if (countryMappings[query]) {
-    return countryMappings[query];
+    Micronesia: "Federated States of Micronesia",
+    "Micronesia (Federated States of)": "Federated States of Micronesia",
+    "Kosovo, Republic of": "Kosovo",
   }
 
-  // Try to find an exact match
-  const taxCountries = getTaxCountries();
+  if (countryMappings[query]) {
+    return countryMappings[query]
+  }
+
+  const taxCountries = getTaxCountries()
   const exactMatch = taxCountries.find(
     (country) => country.toLowerCase() === query.toLowerCase()
-  );
-  if (exactMatch) return exactMatch;
+  )
+  if (exactMatch) return exactMatch
 
-  // Try to find a partial match
   const partialMatches = taxCountries.filter(
     (country) =>
       country.toLowerCase().includes(query.toLowerCase()) ||
       query.toLowerCase().includes(country.toLowerCase())
-  );
+  )
 
   if (partialMatches.length > 0) {
-    // Return the shortest matching country name as it's likely the most specific
-    return partialMatches.sort((a, b) => a.length - b.length)[0];
+    return partialMatches.sort((a, b) => a.length - b.length)[0]
   }
 
-  return null;
+  return null
 }

@@ -1,27 +1,26 @@
 /**
  * Size premium service for WACC calculations
- * Based on Duff & Phelps' size premium study
+ * Kroll market-cap decile premia, 2025
  */
 
 export interface SizePremiumEntry {
-  min: number;
-  max: number;
-  premium: number;
+  min: number
+  max: number
+  premium: number
 }
 
 export const SIZE_PREMIUM_TABLE: SizePremiumEntry[] = [
-  { min: 1724959, max: Infinity, premium: -0.0022 },
-  { min: 25275, max: 1724959, premium: -0.0022 }, // covers top range explicitly
-  { min: 11563, max: 25274.999, premium: 0.0049 },
-  { min: 5916, max: 11562.999, premium: 0.0071 },
-  { min: 3388, max: 5915.999, premium: 0.0075 },
-  { min: 2146, max: 3387.999, premium: 0.0109 },
-  { min: 1397, max: 2145.999, premium: 0.0137 },
-  { min: 800, max: 1396.999, premium: 0.0154 },
-  { min: 397, max: 799.999, premium: 0.0146 },
-  { min: 167, max: 396.999, premium: 0.0229 },
-  { min: 2, max: 166.999, premium: 0.0501 },
-];
+  { min: 46949, max: Infinity, premium: -0.0001 },
+  { min: 20178, max: 46948.999, premium: 0.0033 },
+  { min: 9937, max: 20177.999, premium: 0.0049 },
+  { min: 6181, max: 9936.999, premium: 0.005 },
+  { min: 3946, max: 6180.999, premium: 0.0074 },
+  { min: 2465, max: 3945.999, premium: 0.01 },
+  { min: 1417, max: 2464.999, premium: 0.0119 },
+  { min: 730, max: 1416.999, premium: 0.0088 },
+  { min: 304, max: 729.999, premium: 0.0173 },
+  { min: 2, max: 303.999, premium: 0.0447 },
+]
 
 /**
  * Helper function to format market cap numbers consistently
@@ -29,34 +28,33 @@ export const SIZE_PREMIUM_TABLE: SizePremiumEntry[] = [
  * @returns Formatted string
  */
 function formatMarketCap(value: number): string {
-  if (value >= 1000) {
-    return `${(value / 1000).toFixed(1)}B`; // Display as billions
-  } else {
-    return `${value.toFixed(0)}M`; // Display as millions
-  }
+  if (value >= 1000)
+    return `${(value / 1000).toFixed(1)}B`
+
+  return `${value.toFixed(0)}M`
 }
 
 /**
  * Gets the appropriate size premium based on market capitalization in millions of USD
  * @param marketCapMlnUSD Market capitalization in millions of USD
- * @returns Size premium as a decimal (e.g., 0.0229 for 2.29%)
+ * @returns Size premium as a decimal (e.g., 0.0173 for 1.73%)
  */
 export function getSizePremium(marketCapMlnUSD: number): number {
   return (
     SIZE_PREMIUM_TABLE.find(
       (entry) => marketCapMlnUSD >= entry.min && marketCapMlnUSD <= entry.max
     )?.premium ?? 0
-  );
+  )
 }
 
 /**
  * Gets the appropriate size premium formatted as a percentage string
  * @param marketCapMlnUSD Market capitalization in millions of USD
- * @returns Size premium as a percentage string (e.g., "2.29%")
+ * @returns Size premium as a percentage string (e.g., "1.73%")
  */
 export function getFormattedSizePremium(marketCapMlnUSD: number): string {
-  const premium = getSizePremium(marketCapMlnUSD);
-  return `${(premium * 100).toFixed(2)}%`;
+  const premium = getSizePremium(marketCapMlnUSD)
+  return `${(premium * 100).toFixed(2)}%`
 }
 
 /**
@@ -65,17 +63,11 @@ export function getFormattedSizePremium(marketCapMlnUSD: number): string {
  * @returns Description of the size range
  */
 export function getSizeCategory(marketCapMlnUSD: number): string {
-  if (marketCapMlnUSD >= 25275) {
-    return "Very Large Cap";
-  } else if (marketCapMlnUSD >= 5916) {
-    return "Large Cap";
-  } else if (marketCapMlnUSD >= 1397) {
-    return "Mid Cap";
-  } else if (marketCapMlnUSD >= 167) {
-    return "Small Cap";
-  } else {
-    return "Micro Cap";
-  }
+  if (marketCapMlnUSD >= 46949) return "Very Large Cap"
+  if (marketCapMlnUSD >= 9937) return "Large Cap"
+  if (marketCapMlnUSD >= 2465) return "Mid Cap"
+  if (marketCapMlnUSD >= 304) return "Small Cap"
+  return "Micro Cap"
 }
 
 /**
@@ -86,21 +78,16 @@ export function getSizePremiumRanges(): Array<
   SizePremiumEntry & { description: string }
 > {
   return SIZE_PREMIUM_TABLE.map((entry) => {
-    let description = "";
-
-    if (entry.max === Infinity) {
-      description = `$${formatMarketCap(entry.min)} and above`;
-    } else {
-      description = `$${formatMarketCap(entry.min)} to $${formatMarketCap(
-        entry.max
-      )}`;
-    }
+    const description =
+      entry.max === Infinity
+        ? `$${formatMarketCap(entry.min)} and above`
+        : `$${formatMarketCap(entry.min)} to $${formatMarketCap(entry.max)}`
 
     return {
       ...entry,
       description,
-    };
-  });
+    }
+  })
 }
 
 /**
@@ -113,5 +100,5 @@ export function calculateMarketCap(
   enterpriseValue: number,
   netDebt: number
 ): number {
-  return enterpriseValue - netDebt;
+  return enterpriseValue - netDebt
 }
