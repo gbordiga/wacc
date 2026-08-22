@@ -73,7 +73,7 @@ export default function RootLayout({
     <html lang="en" className="scroll-pb-24" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans min-h-screen`}>
         <Providers>
-          <div className="flex flex-col min-h-screen">
+          <div className="flex min-h-screen flex-col has-[[data-live-wacc-bar]]:[&_footer]:pb-[calc(7rem+env(safe-area-inset-bottom,0px))]">
             <Navbar />
             <main className="flex-1">{children}</main>
             <Footer />

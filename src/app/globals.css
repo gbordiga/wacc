@@ -120,8 +120,4 @@
   body {
     @apply bg-background text-foreground;
   }
-
-  body:has([data-live-wacc-bar]) footer {
-    padding-bottom: 6rem;
-  }
 }
