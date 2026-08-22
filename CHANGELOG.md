@@ -6,6 +6,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-23
+
 ### Data
 
 - Updated country risk-free rates and market risk premiums from Fernandez 2025 (2024 survey used where a country is missing).
@@ -29,6 +31,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Converted `/calculator` to a permanent redirect to `/`.
 - Published a WACC guide, a WACC vs cost of equity article, and a Damodaran WACC article, with internal links and FAQ markup.
 
+### Changed
+
+- Separated the homepage guides and FAQ from the calculator with a full-width band.
+
 ### Fixed
 
 - Grouped print-report integers without locale APIs so server and client markup match.
+- Kept the footer version line above the sticky WACC bar.
