@@ -6,6 +6,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Security
+
+- Upgraded Next.js to 16.3.4 (August 2026 RCE patches and the AVIF optimizer follow-up).
+- Forced `fast-uri` 3.1.7 to close the high-severity Dependabot alerts from the shadcn CLI / ajv chain.
+
 ## [0.3.0] - 2026-08-23
 
 ### Data

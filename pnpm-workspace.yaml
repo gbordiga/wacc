@@ -2,7 +2,8 @@ onlyBuiltDependencies:
   - sharp
   - unrs-resolver
 
-# Next 15.5 pins vulnerable transitive versions; stay on 15.x and force patched releases.
+# Force patched transitive releases used by Next and the shadcn CLI (ajv).
 overrides:
   postcss: 8.5.23
   sharp: 0.35.3
+  fast-uri: 3.1.7
