@@ -2,8 +2,9 @@ onlyBuiltDependencies:
   - sharp
   - unrs-resolver
 
-# Force patched transitive releases used by Next and the shadcn CLI (ajv).
+# Force patched transitive releases used by Next and the shadcn CLI (ajv / hono).
 overrides:
   postcss: 8.5.23
-  sharp: 0.35.3
+  sharp: 0.35.4
   fast-uri: 3.1.7
+  hono: 4.13.5
