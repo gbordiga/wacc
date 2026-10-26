@@ -5,7 +5,8 @@ onlyBuiltDependencies:
 # Force patched transitive releases used by Next and the shadcn CLI.
 overrides:
   postcss: 8.5.23
-  sharp: 0.35.4
+  sharp: 0.35.5
+  proxy-addr: 2.0.8
   fast-uri: 3.1.7
   hono: 4.13.5
   js-yaml: 4.3.2
