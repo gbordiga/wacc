@@ -7,11 +7,12 @@ overrides:
   postcss: 8.5.23
   sharp: 0.35.5
   proxy-addr: 2.0.8
-  fast-uri: 3.1.7
-  hono: 4.13.5
+  fast-uri: 3.1.9
+  hono: 4.13.14
   js-yaml: 4.3.2
   source-map-js: 1.2.2
   "@modelcontextprotocol/sdk": 1.32.2
   brace-expansion@1: 1.1.21
   brace-expansion@5: 5.0.12
   undici: 7.30.1
+  ip-address: 10.7.5
